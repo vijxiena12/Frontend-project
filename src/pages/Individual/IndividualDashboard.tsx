@@ -23,10 +23,8 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
-import axios from "axios"
+import { api } from "@/lib/api"
 import { Link } from "react-router-dom"
-
-const API_BASE = "http://localhost:8000/api"
 
 interface AssessmentHistory {
   id: number
@@ -71,9 +69,9 @@ export default function IndividualDashboard() {
     setLoading(true)
     try {
       const [profileRes, historyRes, suggestionsRes] = await Promise.all([
-        axios.get(`${API_BASE}/individual/profile?user_id=${userId}`),
-        axios.get(`${API_BASE}/individual/history?user_id=${userId}`),
-        axios.get(`${API_BASE}/individual/resume-suggestions?user_id=${userId}`)
+        api.get(`/individual/profile?user_id=${userId}`),
+        api.get(`/individual/history?user_id=${userId}`),
+        api.get(`/individual/resume-suggestions?user_id=${userId}`)
       ])
       setProfile(profileRes.data)
       setHistory(historyRes.data)

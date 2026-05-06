@@ -28,9 +28,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
-import axios from "axios"
-
-const API_BASE = "http://localhost:8000/api"
+import { api } from "@/lib/api"
 
 interface Job {
   id: number
@@ -86,7 +84,7 @@ export default function RecruiterDashboard() {
     const userId = user.id
 
     try {
-      const res = await axios.get(`${API_BASE}/jobs?user_id=${userId}`)
+      const res = await api.get(`/jobs?user_id=${userId}`)
       setJobs(res.data)
     } catch (err) {
       console.error(err)
@@ -95,7 +93,7 @@ export default function RecruiterDashboard() {
 
   const fetchCandidates = async (jobId: number) => {
     try {
-      const res = await axios.get(`${API_BASE}/recruiter/candidates/${jobId}`)
+      const res = await api.get(`/recruiter/candidates/${jobId}`)
       setCandidates(res.data)
     } catch (err) {
       console.error(err)
@@ -112,7 +110,7 @@ export default function RecruiterDashboard() {
     setLoading(true)
     try {
       const requirements = newJobRequirements.split("\n").filter(r => r.trim())
-      await axios.post(`${API_BASE}/jobs?user_id=${userId}`, {
+      await api.post(`/jobs?user_id=${userId}`, {
         title: newJobTitle,
         raw_text: newJobText,
         requirements
@@ -137,7 +135,7 @@ export default function RecruiterDashboard() {
 
     if (!window.confirm("Are you sure you want to delete this job opening? This will also delete all associated resumes and assessments.")) return
     try {
-      await axios.delete(`${API_BASE}/jobs/${jobId}?user_id=${userId}`)
+      await api.delete(`/jobs/${jobId}?user_id=${userId}`)
       if (selectedJob?.id === jobId) setSelectedJob(null)
       fetchJobs()
     } catch (err) {
@@ -164,7 +162,7 @@ export default function RecruiterDashboard() {
     })
 
     try {
-      await axios.post(`${API_BASE}/recruiter/upload-resumes`, formData)
+      await api.post(`/recruiter/upload-resumes`, formData)
       fetchCandidates(selectedJob.id)
       fetchJobs()
     } catch (err) {

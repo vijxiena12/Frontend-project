@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowGreenLeft, ArrowGreenRight } from './Vectors';
 import { CircularBadge } from './CircularBadge';
 import { FloatingCard } from './FloatingCard';
@@ -52,6 +53,19 @@ export const HeroMain = () => {
             </h1>
           </div>
 
+          <div className="max-w-3xl mt-8">
+            <p className="text-base md:text-xl text-white/85 font-medium leading-relaxed">
+              SmartHire AI helps hiring teams move faster with objective screening, automated candidate ranking, and data-backed interview insights — all from a single intelligent platform.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/signup?role=RECRUITER" className="inline-flex items-center justify-center rounded-full bg-[#CCFF00] px-8 py-4 text-sm font-black uppercase text-black shadow-xl transition hover:bg-[#d2ff36]">
+                Hire Smarter
+              </Link>
+              <Link to="/preview" className="inline-flex items-center justify-center rounded-full border border-white/30 px-8 py-4 text-sm font-black uppercase text-white transition hover:bg-white/10">
+                Preview Dashboard
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Absolute Overlays (Cards, Arrows, Badge) */}

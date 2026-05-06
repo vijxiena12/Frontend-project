@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Sparkles } from "lucide-react";
 import { EyeBall, Pupil } from "./CharacterAssets";
+import heroBg from "@/assets/hero.png";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -108,11 +109,11 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left Content Section */}
-      <div className="relative hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#0038FF]/90 via-[#0038FF] to-[#0038FF]/80 p-12 text-white">
+      <div className="relative hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#F8EFE2] via-[#E8D5BB] to-[#D9C3A2] p-12 text-slate-900">
         <div className="relative z-20">
-          <div className="flex items-center gap-2 text-lg font-semibold">
-            <div className="size-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-              <Sparkles className="size-4" />
+          <div className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+            <div className="size-8 rounded-lg bg-slate-900/5 backdrop-blur-sm flex items-center justify-center">
+              <Sparkles className="size-4 text-amber-700" />
             </div>
             <span>SmartHire AI</span>
           </div>
@@ -256,8 +257,19 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
       </div>
 
       {/* Right Form Section */}
-      <div className="flex items-center justify-center p-8 bg-background relative overflow-hidden">
-        {children}
+      <div
+        className="flex items-center justify-center p-8 bg-[#f8efe2] relative overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(rgba(248,239,226,0.96), rgba(237,222,205,0.96)), url(${heroBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat"
+        }}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.6),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(203,149,90,0.18),_transparent_40%)] pointer-events-none" />
+        <div className="relative z-10 w-full max-w-[520px] rounded-[40px] bg-white/90 border border-slate-200/50 p-10 shadow-2xl backdrop-blur-sm">
+          {children}
+        </div>
       </div>
     </div>
   );

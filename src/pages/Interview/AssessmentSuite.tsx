@@ -30,11 +30,9 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import axios from "axios"
+import { ATSCard } from "@/components/ui/ATSCard"
+import { api } from "@/lib/api"
 import { ProctorStream } from "@/components/interview/ProctorStream"
-
-// API Base URL
-const API_BASE = "http://localhost:8000/api"
 
 type Step = "workspace" | "setup" | "interview" | "test" | "report"
 
@@ -121,7 +119,7 @@ function WorkspaceStep({ onComplete }: { onComplete: (data: any, sid: string) =>
       formData.append("jd_text", jd)
       formData.append("job_title", title || "Target Role")
       
-      const res = await axios.post(`${API_BASE}/screen`, formData)
+      const res = await api.post(`/screen`, formData)
       onComplete(res.data.data, res.data.session_id)
     } catch (err) {
       console.error(err)
@@ -434,7 +432,7 @@ function TestStep({ sessionId, data, interviewAnswers, onComplete }: { sessionId
   const runCode = async () => {
     setCodeLoading(true)
     try {
-      const res = await axios.post(`${API_BASE}/code/execute`, {
+      const res = await api.post(`/code/execute`, {
         code: codeSolution,
         language: language,
         test_cases: [{ input: "", expected: "" }]
@@ -460,7 +458,7 @@ function TestStep({ sessionId, data, interviewAnswers, onComplete }: { sessionId
       const mcqScore = (correct / assessment.mcqs.length) * 100
 
       // Submit results to backend with interview answers and sessionId
-      await axios.post(`${API_BASE}/individual/submit-assessment`, {
+      await api.post(`/individual/submit-assessment`, {
         session_id: sessionId,
         interview_answers: interviewAnswers || [],
         resume_id: 1, // Fallback for demo
@@ -643,7 +641,7 @@ function ReportStep({ sessionId, onReset }: { sessionId: string, onReset: () => 
   useEffect(() => {
     async function fetchResults() {
       try {
-        const res = await axios.get(`${API_BASE}/results/${sessionId}`)
+        const res = await api.get(`/results/${sessionId}`)
         setData(res.data)
       } catch (err) {
         console.error(err)
@@ -857,79 +855,82 @@ function ReportStep({ sessionId, onReset }: { sessionId: string, onReset: () => 
 
       {/* Section 5: Core Stats (ATS + Integrity) */}
       <div className="grid lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 p-10 border-slate-200 rounded-[3rem] bg-white shadow-2xl shadow-slate-200/40 space-y-10">
-          <div className="grid md:grid-cols-2 gap-10">
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">ATS Compatibility</h3>
-              <div className="flex items-center gap-6">
-                <div className="text-6xl font-black text-indigo-600">{screener?.ats_result?.ats_score}%</div>
-                <Badge className="bg-indigo-50 text-indigo-600 border-indigo-100 border-2 px-4 py-1 text-sm">{screener?.evaluation?.overall_fit}</Badge>
-              </div>
-              <Progress value={screener?.ats_result?.ats_score} className="h-4 bg-slate-100" />
-            </div>
+        <div className="lg:col-span-2">
+          <ATSCard
+            score={screener?.ats_result?.ats_score ?? 0}
+            status={screener?.evaluation?.overall_fit ?? "Good Match"}
+            confidence={screener?.ats_result?.confidence ?? "High confidence"}
+            recommendation="Keep your resume ATS-friendly by matching key skills, avoiding complex formatting, and using standard job titles."
+          />
+        </div>
 
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Integrity Rank</h3>
-              <div className="flex items-center gap-6">
-                <div className={`text-6xl font-black ${integrityScore > 80 ? "text-emerald-600" : "text-rose-600"}`}>{integrityScore}%</div>
-                <Badge className={`${integrityScore > 80 ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"} border-2 px-4 py-1 text-sm`}>
-                  {integrityScore > 90 ? "Excellent" : integrityScore > 70 ? "Normal" : "Flagged"}
-                </Badge>
-              </div>
-              <Progress value={integrityScore} className="h-4 bg-slate-100" />
+        <Card className="p-8 border-slate-200 rounded-[3rem] bg-white shadow-2xl shadow-slate-200/40 space-y-6">
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Integrity Rank</h3>
+            <div className="flex items-center gap-6">
+              <div className={`text-6xl font-black ${integrityScore > 80 ? "text-emerald-600" : "text-rose-600"}`}>{integrityScore}%</div>
+              <Badge className={`${integrityScore > 80 ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"} border-2 px-4 py-1 text-sm`}>
+                {integrityScore > 90 ? "Excellent" : integrityScore > 70 ? "Normal" : "Flagged"}
+              </Badge>
             </div>
+            <Progress value={integrityScore} className="h-4 bg-slate-100" />
           </div>
 
-          <Separator className="bg-slate-100" />
-
-          <div className="space-y-6">
-             <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
-               <Target className="w-6 h-6 text-indigo-600" />
-               Technical MCQ Analysis
-             </h3>
-             <div className="space-y-4">
-               {assessment?.mcqs.map((q: any) => (
-                 <div key={q.id} className="p-6 rounded-3xl bg-slate-50 border-2 border-slate-100 space-y-3">
-                   <div className="flex items-start justify-between gap-4">
-                     <p className="font-bold text-slate-800">{q.question}</p>
-                     <Badge className="bg-white border-2">Q{q.id}</Badge>
-                   </div>
-                   <div className="grid grid-cols-2 gap-2">
-                     {q.options.map((opt: string, idx: number) => (
-                       <div key={idx} className={`text-xs p-3 rounded-xl border ${
-                         idx === q.correct_idx ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-bold" : "bg-white border-slate-200 text-slate-400"
-                       }`}>
-                         {opt} {idx === q.correct_idx && "✓"}
-                       </div>
-                     ))}
-                   </div>
-                   <p className="text-xs text-slate-500 italic bg-white p-3 rounded-xl border border-dashed">
-                     <span className="font-bold text-indigo-600 mr-2">Explanation:</span>
-                     {q.explanation}
-                   </p>
-                 </div>
-               ))}
-             </div>
+          <div className="rounded-3xl border border-slate-100 bg-slate-50 p-5">
+            <p className="text-sm font-semibold text-slate-700">Behavioral integrity shows candidate honesty and compliance during the assessment.</p>
+            <p className="mt-3 text-sm text-slate-500">Integrate this score with ATS performance to make hiring decisions that value both technical fit and candidate reliability.</p>
           </div>
         </Card>
+      </div>
 
-        {/* Actions */}
-        <div className="space-y-8">
-          <Card className="p-8 border-slate-200 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl">
-            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <BrainCircuit className="w-5 h-5 text-indigo-400" />
-              Next Steps
-            </h3>
-            <div className="space-y-3">
-              <Button onClick={() => window.location.href='/individual/dashboard'} className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 rounded-xl">
-                Return to Dashboard
-              </Button>
-              <Button onClick={onReset} variant="outline" className="w-full h-12 rounded-xl border-2">
-                Re-take Assessment
-              </Button>
-            </div>
-          </Card>
+      <Card className="mt-8 p-10 border-slate-200 rounded-[3rem] bg-white shadow-2xl shadow-slate-200/40 space-y-10">
+        <div className="space-y-6">
+          <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
+            <Target className="w-6 h-6 text-indigo-600" />
+            Technical MCQ Analysis
+          </h3>
+          <div className="space-y-4">
+            {assessment?.mcqs.map((q: any) => (
+              <div key={q.id} className="p-6 rounded-3xl bg-slate-50 border-2 border-slate-100 space-y-3">
+                <div className="flex items-start justify-between gap-4">
+                  <p className="font-bold text-slate-800">{q.question}</p>
+                  <Badge className="bg-white border-2">Q{q.id}</Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {q.options.map((opt: string, idx: number) => (
+                    <div key={idx} className={`text-xs p-3 rounded-xl border ${
+                      idx === q.correct_idx ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-bold" : "bg-white border-slate-200 text-slate-400"
+                    }`}>
+                      {opt} {idx === q.correct_idx && "✓"}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-slate-500 italic bg-white p-3 rounded-xl border border-dashed">
+                  <span className="font-bold text-indigo-600 mr-2">Explanation:</span>
+                  {q.explanation}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
+      </Card>
+
+      {/* Actions */}
+      <div className="space-y-8">
+        <Card className="p-8 border-slate-200 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl">
+          <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+            <BrainCircuit className="w-5 h-5 text-indigo-400" />
+            Next Steps
+          </h3>
+          <div className="space-y-3">
+            <Button onClick={() => window.location.href='/individual/dashboard'} className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 rounded-xl">
+              Return to Dashboard
+            </Button>
+            <Button onClick={onReset} variant="outline" className="w-full h-12 rounded-xl border-2">
+              Re-take Assessment
+            </Button>
+          </div>
+        </Card>
       </div>
     </div>
   )

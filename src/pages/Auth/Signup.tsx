@@ -7,9 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Sparkles, Eye, EyeOff, Briefcase, User as UserIcon } from "lucide-react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
-import axios from "axios";
-
-const API_BASE = "http://localhost:8000/api";
+import { api } from "@/lib/api";
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +26,7 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(`${API_BASE}/auth/register`, {
+      const res = await api.post("/auth/register", {
         email,
         password,
         role
@@ -54,7 +52,7 @@ export default function Signup() {
       
       if (!email) throw new Error("No email returned from Google");
       
-      const res = await axios.post(`${API_BASE}/auth/google`, { email });
+      const res = await api.post("/auth/google", { email });
       const userData = res.data;
       localStorage.setItem("user", JSON.stringify(userData));
       
@@ -72,17 +70,17 @@ export default function Signup() {
     <AuthLayout isTyping={isTyping} passwordValue={password} showPassword={showPassword}>
       <div className="w-full max-w-[420px]">
         {/* Mobile Logo */}
-        <div className="lg:hidden flex items-center justify-center gap-2 text-lg font-semibold mb-12">
-          <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Sparkles className="size-4 text-primary" />
+        <div className="lg:hidden flex items-center justify-center gap-2 text-lg font-semibold mb-12 text-slate-900">
+          <div className="size-8 rounded-lg bg-amber-100 flex items-center justify-center">
+            <Sparkles className="size-4 text-amber-700" />
           </div>
           <span>SmartHire AI</span>
         </div>
 
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Create an account</h1>
-          <p className="text-muted-foreground text-sm">Join us and start screening smarter</p>
+          <h1 className="text-3xl font-bold tracking-tight mb-2 text-slate-900">Create an account</h1>
+          <p className="text-slate-500 text-sm">Join us and start screening smarter</p>
         </div>
 
         {/* Signup Form */}
@@ -98,7 +96,7 @@ export default function Signup() {
               onFocus={() => setIsTyping(true)}
               onBlur={() => setIsTyping(false)}
               required
-              className="h-12 bg-background border-border/60 focus:border-primary"
+              className="h-12 bg-[#f8efe2] border-slate-300/80 focus:border-amber-500"
             />
           </div>
 
@@ -114,7 +112,7 @@ export default function Signup() {
               onFocus={() => setIsTyping(true)}
               onBlur={() => setIsTyping(false)}
               required
-              className="h-12 bg-background border-border/60 focus:border-primary"
+              className="h-12 bg-[#f8efe2] border-slate-300/80 focus:border-amber-500"
             />
           </div>
 
@@ -128,7 +126,7 @@ export default function Signup() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="h-12 pr-10 bg-background border-border/60 focus:border-primary"
+                className="h-12 pr-10 bg-[#f8efe2] border-slate-300/80 focus:border-amber-500"
               />
               <button
                 type="button"
@@ -176,7 +174,7 @@ export default function Signup() {
             </div>
           )}
 
-          <Button type="submit" className="w-full h-12 text-base font-medium" disabled={isLoading}>
+          <Button type="submit" className="w-full h-12 rounded-full bg-amber-700 text-white hover:bg-amber-800 text-base font-medium" disabled={isLoading}>
             {isLoading ? "Creating account..." : "Sign Up"}
           </Button>
         </form>
@@ -184,7 +182,7 @@ export default function Signup() {
         <div className="mt-6">
           <Button 
             variant="outline" 
-            className="w-full h-12" 
+            className="w-full h-12 rounded-full border-amber-700 text-amber-700 hover:bg-amber-100" 
             type="button"
             onClick={handleGoogleSignup}
             disabled={isLoading}
@@ -194,9 +192,9 @@ export default function Signup() {
           </Button>
         </div>
 
-        <div className="text-center text-sm text-muted-foreground mt-8">
+        <div className="text-center text-sm text-slate-600 mt-8">
           Already have an account?{" "}
-          <Link to="/login" className="text-foreground font-medium hover:underline">
+          <Link to="/login" className="text-amber-700 font-medium hover:underline">
             Log In
           </Link>
         </div>
