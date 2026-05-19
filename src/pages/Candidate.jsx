@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import Button from "../components/Charts";
-import Card from "../components/JobDescription";
-import LoadingSpinner from "../components/ResumePreview";
+import { useNavigate } from "react-router-dom";
 
 function Candidate() {
   const [file, setFile] = useState(null);
   const [jd, setJd] = useState("");
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleAnalyze = async () => {
@@ -18,33 +16,51 @@ function Candidate() {
     }
 
     setIsLoading(true);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock result for demo
-      const mockResult = {
-        final_score: 85,
-        overall: 85,
-        skill_score: 90,
-        experience_score: 80,
-        matched_skills: ["React", "TypeScript", "Node.js", "MongoDB", "Git"],
-        missing_skills: ["Docker", "AWS", "GraphQL"],
-        suggestions: [
-          "Consider learning Docker for containerization",
-          "AWS certification would strengthen your profile",
-          "GraphQL experience is increasingly in demand"
-        ]
-      };
-      
-      setResult(mockResult);
 
-      // Save history
-      const history = JSON.parse(localStorage.getItem("history") || "[]");
-      history.push(mockResult);
-      localStorage.setItem("history", JSON.stringify(history));
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Mock analysis result
+      const mockData = {
+        finalScore: 87,
+        breakdown: {
+          overallMatch: 87,
+          skillMatch: 92,
+          experience: 82,
+          keywords: 78,
+          formatting: 88
+        },
+        matchingSkills: ["React", "JavaScript", "TypeScript", "Node.js", "MongoDB"],
+        missingSkills: ["GraphQL", "AWS", "Docker"],
+        suggestions: [
+          "Add GraphQL experience to your resume",
+          "Consider getting AWS certification",
+          "Include more project descriptions with quantifiable results",
+          "Highlight your experience with microservices architecture"
+        ],
+        highlightedResume: "Sample parsed resume content for display"
+      };
+
+      setResult(mockData);
+
+      // SAVE HISTORY
+      const history = JSON.parse(
+        localStorage.getItem("history") || "[]"
+      );
+
+      history.push({
+        ...mockData,
+        date: new Date().toISOString()
+      });
+
+      localStorage.setItem(
+        "history",
+        JSON.stringify(history)
+      );
+
     } catch (error) {
+      console.error("Error:", error);
       alert("Analysis failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -52,277 +68,372 @@ function Candidate() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Navigation Header */}
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">💼</span>
-                </div>
-                <span className="text-xl font-bold text-gray-900">SmartHire</span>
-              </Link>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Link 
-                to="/dashboard" 
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-              >
-                Dashboard
-              </Link>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  localStorage.removeItem("isAuth");
-                  navigate("/");
-                }}
-                size="sm"
-              >
-                Logout
-              </Button>
-            </div>
+    <div className="min-h-screen bg-[#f5efe6] text-[#0f172a]">
+
+      {/* HEADER */}
+      <div className="border-b border-gray-300 bg-[#f5efe6]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+
+          <div className="flex items-center gap-4">
+            <div className="text-2xl">📁</div>
+
+            <h1 className="text-2xl font-black tracking-tight">
+              CANDIDATE DASHBOARD
+            </h1>
           </div>
-        </div>
-      </nav>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Candidate Dashboard
-          </h1>
-          <p className="text-lg text-gray-600">
-            Analyze your resume against job descriptions and get personalized recommendations
-          </p>
+          <button
+            onClick={() => {
+              localStorage.removeItem("isAuth");
+              navigate("/");
+            }}
+            className="border-2 border-[#0f172a] px-5 py-2 rounded-full font-semibold hover:bg-[#0f172a] hover:text-white transition"
+          >
+            Logout
+          </button>
+
+        </div>
+      </div>
+
+      {/* MAIN */}
+      <div className="max-w-7xl mx-auto px-6 py-10">
+
+        {/* HERO */}
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-10 mb-12">
+
+          <div>
+            <h2 className="text-6xl font-black leading-none">
+              Performance{" "}
+              <span className="text-red-500">
+                Hub
+              </span>
+            </h2>
+
+            <p className="mt-5 text-2xl text-slate-600 max-w-2xl leading-relaxed">
+              Personalized insights and AI-driven career optimization based on
+              your latest assessments.
+            </p>
+          </div>
+
+          <button className="bg-[#020c2b] text-white px-10 py-5 rounded-3xl text-xl font-bold hover:scale-105 transition">
+            Take New Assessment ↗
+          </button>
+
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Analysis Section */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Resume Upload */}
-            <Card>
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  Upload Resume
-                </h2>
-                <p className="text-gray-600">
-                  Upload your resume to get started with the analysis
+        {/* CONTENT */}
+        <div className="grid lg:grid-cols-3 gap-8">
+
+          {/* LEFT SIDE */}
+          <div className="space-y-6">
+
+            {/* SCORE */}
+            <div className="bg-white border-[3px] border-[#0f172a] rounded-[40px] p-8 shadow-lg">
+
+              <p className="text-sm font-bold tracking-widest text-slate-500 uppercase">
+                Average
+              </p>
+
+              <h3 className="text-6xl font-black mt-4">
+                {result?.final_score || 0}%
+              </h3>
+
+              <p className="mt-4 text-slate-500 font-semibold">
+                Overall Fitness
+              </p>
+
+            </div>
+
+            {/* HISTORY */}
+            <div className="bg-[#020c2b] text-white rounded-[40px] p-8 shadow-lg">
+
+              <p className="text-sm font-bold tracking-widest uppercase opacity-70">
+                Count
+              </p>
+
+              <h3 className="text-6xl font-black mt-4">
+                {JSON.parse(localStorage.getItem("history") || "[]").length}
+              </h3>
+
+              <p className="mt-4 opacity-70 font-semibold">
+                Assessments
+              </p>
+
+            </div>
+
+            {/* SKILL SCORE */}
+            <div className="bg-white border-[3px] border-[#0f172a] rounded-[40px] p-8 shadow-lg">
+
+              <div className="flex justify-between items-center">
+
+                <p className="font-bold uppercase tracking-wide">
+                  Skills Trend
                 </p>
+
+                <span className="bg-[#020c2b] text-white px-3 py-1 rounded-full text-xs">
+                  Latest
+                </span>
+
               </div>
-              
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+
+              <h3 className="text-5xl font-black mt-6">
+                {result?.skill_score || 0}%
+              </h3>
+
+              <div className="w-full h-3 bg-gray-200 rounded-full mt-6 overflow-hidden">
+
+                <div
+                  className="h-full bg-[#020c2b]"
+                  style={{
+                    width: `${result?.skill_score || 0}%`,
+                  }}
+                />
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* RIGHT PANEL */}
+          <div className="lg:col-span-2 bg-white border-[4px] border-[#0f172a] rounded-[50px] p-10 shadow-xl">
+
+            {/* HEADER */}
+            <div className="flex justify-between items-start">
+
+              <div>
+
+                <h3 className="text-5xl font-black">
+                  AI Resume Insights
+                </h3>
+
+                <p className="mt-3 text-slate-600 text-lg">
+                  Based on your latest upload:
+                  <span className="font-bold ml-2">
+                    {file ? file.name : "N/A"}
+                  </span>
+                </p>
+
+              </div>
+
+              <div className="w-24 h-24 rounded-3xl bg-[#f5efe6] flex items-center justify-center text-4xl">
+                💡
+              </div>
+
+            </div>
+
+            {/* FORM */}
+            <div className="mt-10 border-4 border-dashed border-gray-300 rounded-[40px] p-10">
+
+              {/* FILE */}
+              <div className="text-center">
+
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  id="resume"
                   className="hidden"
-                  id="resume-upload"
+                  onChange={(e) =>
+                    setFile(e.target.files[0])
+                  }
                 />
-                <label htmlFor="resume-upload" className="cursor-pointer">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl">📄</span>
+
+                <label
+                  htmlFor="resume"
+                  className="cursor-pointer"
+                >
+
+                  <div className="w-24 h-24 bg-red-50 rounded-3xl flex items-center justify-center mx-auto text-5xl">
+                    📄
                   </div>
-                  <p className="text-gray-900 font-medium">
-                    {file ? file.name : "Click to upload resume"}
+
+                  <p className="mt-6 text-3xl font-bold">
+                    {file
+                      ? file.name
+                      : "Upload Resume"}
                   </p>
-                  <p className="text-gray-500 text-sm">
-                    PDF, DOC, DOCX (max 10MB)
+
+                  <p className="mt-3 text-slate-500 font-semibold">
+                    PDF FILES ONLY (MAX 10MB)
                   </p>
+
                 </label>
-              </div>
-            </Card>
 
-            {/* Job Description */}
-            <Card>
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              </div>
+
+              {/* JOB TITLE */}
+              <div className="mt-10">
+
+                <label className="font-black text-2xl uppercase">
+                  Target Job Title
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="e.g. Senior Frontend Developer"
+                  className="w-full mt-4 p-5 rounded-2xl border border-gray-300 text-xl"
+                />
+
+              </div>
+
+              {/* JOB DESCRIPTION */}
+              <div className="mt-8">
+
+                <label className="font-black text-2xl uppercase">
                   Job Description
-                </h2>
-                <p className="text-gray-600">
-                  Paste the job description you want to analyze against
-                </p>
-              </div>
-              
-              <textarea
-                value={jd}
-                onChange={(e) => setJd(e.target.value)}
-                placeholder="Paste the job description here..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 h-32 resize-none"
-              />
-              
-              <Button
-                onClick={handleAnalyze}
-                disabled={!file || !jd || isLoading}
-                className="w-full mt-4"
-                size="lg"
-              >
-                {isLoading ? (
-                  <>
-                    <LoadingSpinner size="sm" className="mr-2" />
-                    Analyzing...
-                  </>
-                ) : (
-                  "Analyze Resume"
-                )}
-              </Button>
-            </Card>
+                </label>
 
-            {/* Results Section */}
+                <textarea
+                  value={jd}
+                  onChange={(e) => setJd(e.target.value)}
+                  placeholder="Paste the job description here..."
+                  className="w-full mt-4 h-64 p-6 rounded-3xl border border-gray-300 text-xl resize-none"
+                />
+
+              </div>
+
+              {/* BUTTON */}
+              <button
+                onClick={handleAnalyze}
+                disabled={isLoading}
+                className="w-full mt-10 bg-[#e8848d] hover:bg-[#d96d77] text-white text-3xl font-black py-7 rounded-3xl transition"
+              >
+
+                {isLoading
+                  ? "Analyzing Requirements..."
+                  : "Run Analysis Now"}
+
+              </button>
+
+            </div>
+
+            {/* RESULTS */}
             {result && (
               <>
-                {/* Score Card */}
-                <Card>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-6">
-                    Analysis Results
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <div className="text-3xl font-bold text-green-600 mb-2">
-                        {result.final_score || result.overall}%
-                      </div>
-                      <p className="text-green-900 font-medium">Overall Match</p>
-                    </div>
-                    
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <div className="text-3xl font-bold text-blue-600 mb-2">
-                        {result.skill_score}%
-                      </div>
-                      <p className="text-blue-900 font-medium">Skills Match</p>
-                    </div>
-                    
-                    <div className="text-center p-4 bg-purple-50 rounded-lg">
-                      <div className="text-3xl font-bold text-purple-600 mb-2">
-                        {result.experience_score}%
-                      </div>
-                      <p className="text-purple-900 font-medium">Experience Match</p>
-                    </div>
-                  </div>
-                </Card>
 
-                {/* Skills Section */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <Card>
-                    <h4 className="text-lg font-semibold text-green-900 mb-4">
+                {/* SCORE CARDS */}
+                <div className="mt-12 border-t pt-10">
+
+                  <div className="grid md:grid-cols-3 gap-6">
+
+                    <div className="bg-green-50 rounded-3xl p-8">
+
+                      <h4 className="text-xl font-bold text-green-800">
+                        Overall Match
+                      </h4>
+
+                      <p className="text-6xl font-black mt-4 text-green-700">
+                        {result.final_score || result.overall}%
+                      </p>
+
+                    </div>
+
+                    <div className="bg-blue-50 rounded-3xl p-8">
+
+                      <h4 className="text-xl font-bold text-blue-800">
+                        Skills Match
+                      </h4>
+
+                      <p className="text-6xl font-black mt-4 text-blue-700">
+                        {result.skill_score}%
+                      </p>
+
+                    </div>
+
+                    <div className="bg-purple-50 rounded-3xl p-8">
+
+                      <h4 className="text-xl font-bold text-purple-800">
+                        Experience Match
+                      </h4>
+
+                      <p className="text-6xl font-black mt-4 text-purple-700">
+                        {result.experience_score}%
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* SKILLS */}
+                <div className="grid md:grid-cols-2 gap-8 mt-10">
+
+                  <div className="bg-green-50 rounded-3xl p-8">
+
+                    <h4 className="text-2xl font-black text-green-900 mb-6">
                       ✅ Matched Skills
                     </h4>
-                    <div className="flex flex-wrap gap-2">
+
+                    <div className="flex flex-wrap gap-3">
+
                       {result.matched_skills?.map((skill, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
+                          className="bg-green-200 text-green-900 px-4 py-2 rounded-full font-semibold"
                         >
                           {skill}
                         </span>
                       ))}
+
                     </div>
-                  </Card>
-                  
-                  <Card>
-                    <h4 className="text-lg font-semibold text-red-900 mb-4">
+
+                  </div>
+
+                  <div className="bg-red-50 rounded-3xl p-8">
+
+                    <h4 className="text-2xl font-black text-red-900 mb-6">
                       ❌ Missing Skills
                     </h4>
-                    <div className="flex flex-wrap gap-2">
+
+                    <div className="flex flex-wrap gap-3">
+
                       {result.missing_skills?.map((skill, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium"
+                          className="bg-red-200 text-red-900 px-4 py-2 rounded-full font-semibold"
                         >
                           {skill}
                         </span>
                       ))}
+
                     </div>
-                  </Card>
+
+                  </div>
+
                 </div>
 
-                {/* Suggestions */}
-                <Card>
-                  <h4 className="text-lg font-semibold text-blue-900 mb-4">
-                    💡 Recommendations
+                {/* AI RECOMMENDATIONS */}
+                <div className="mt-10 bg-blue-50 rounded-3xl p-8">
+
+                  <h4 className="text-3xl font-black text-blue-900 mb-6">
+                    💡 AI Recommendations
                   </h4>
-                  <div className="space-y-3">
+
+                  <div className="space-y-4">
+
                     {result.suggestions?.map((suggestion, index) => (
-                      <div key={index} className="flex items-start">
-                        <span className="text-blue-500 mr-3 mt-1">•</span>
-                        <p className="text-gray-700">{suggestion}</p>
+                      <div
+                        key={index}
+                        className="bg-white p-5 rounded-2xl shadow-sm"
+                      >
+                        {suggestion}
                       </div>
                     ))}
+
                   </div>
-                </Card>
+
+                </div>
+
               </>
             )}
+
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Stats */}
-            <Card>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Your Progress
-              </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Profile Completion</span>
-                  <span className="text-green-600 font-medium">85%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-green-600 h-2 rounded-full" style={{ width: '85%' }}></div>
-                </div>
-                
-                <div className="flex justify-between items-center pt-2">
-                  <span className="text-gray-600">Applications Sent</span>
-                  <span className="font-medium">12</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Interviews Scheduled</span>
-                  <span className="font-medium">3</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Profile Views</span>
-                  <span className="font-medium">47</span>
-                </div>
-              </div>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Recent Activity
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                  <span className="text-gray-600">Resume analyzed for Senior Developer</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                  <span className="text-gray-600">Profile updated</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
-                  <span className="text-gray-600">New skill added: TypeScript</span>
-                </div>
-              </div>
-            </Card>
-
-            {/* Tips */}
-            <Card className="bg-blue-50 border-blue-200">
-              <h3 className="text-lg font-semibold text-blue-900 mb-3">
-                💡 Pro Tip
-              </h3>
-              <p className="text-blue-800 text-sm">
-                Keep your resume updated and tailor it to each job application for better match scores!
-              </p>
-            </Card>
-          </div>
         </div>
-      </main>
+
+      </div>
+
     </div>
   );
 }

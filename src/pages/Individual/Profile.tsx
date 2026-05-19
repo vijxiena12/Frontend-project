@@ -1,227 +1,334 @@
-import React, { useEffect, useState } from "react"
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Briefcase, 
-  GraduationCap, 
-  Code2, 
-  ExternalLink,
-  GitBranch,
-  Users,
-  Globe,
-  Settings,
-  ShieldCheck,
-  Zap,
-  Target,
-  FileText,
-  Award
-} from "lucide-react"
-import { motion } from "framer-motion"
+import { ChangeEvent, useEffect, useState } from "react"
+import { Mail, Phone, MapPin, ExternalLink, ShieldCheck, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { SketchyDashboardLayout } from "@/components/SketchyDashboardLayout"
-import { SketchyCard, SketchyMetricCard } from "@/components/SketchyCard"
+import { SketchyCard } from "@/components/SketchyCard"
+import { api } from "@/lib/api"
+
+interface ExperienceItem {
+  role: string
+  company: string
+  period: string
+  description: string
+}
+
+interface ProjectItem {
+  title: string
+  description: string
+}
+
+interface ResumeProfile {
+  name: string
+  title: string
+  location: string
+  email: string
+  phone: string
+  summary: string
+  skills: string[]
+  experience: ExperienceItem[]
+  projects: ProjectItem[]
+  ats_score: number
+  resume_url?: string
+}
+
+const defaultProfile: ResumeProfile = {
+  name: "Candidate User",
+  title: "Full Stack Engineer",
+  location: "San Francisco, CA",
+  email: "candidate@example.com",
+  phone: "+1 (555) 000-0000",
+  summary: "Results-driven engineer with a strong focus on building scalable web applications and optimizing resume performance for modern hiring pipelines.",
+  skills: ["React", "TypeScript", "Node.js", "Python", "AWS", "GraphQL"],
+  experience: [
+    {
+      role: "Senior Software Engineer",
+      company: "TechFlow Systems",
+      period: "2021 - Present",
+      description: "Led the development of enterprise analytics tools used by thousands of customers."
+    },
+    {
+      role: "Full Stack Developer",
+      company: "Innovate AI",
+      period: "2019 - 2021",
+      description: "Built AI-powered recruitment features and optimized frontend performance for enterprise dashboards."
+    }
+  ],
+  projects: [
+    {
+      title: "Resume Intelligence Dashboard",
+      description: "Created an AI-driven dashboard that analyzes resumes and provides actionable ATS optimization advice."
+    },
+    {
+      title: "Interview Prep Suite",
+      description: "Built a real-time interview simulator with proctored voice prompts and question tracking."
+    }
+  ],
+  ats_score: 82,
+}
 
 export default function Profile() {
   const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<ResumeProfile>(defaultProfile)
+  const [resumeFile, setResumeFile] = useState<File | null>(null)
+  const [resumeText, setResumeText] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [lastParsed, setLastParsed] = useState("")
 
   useEffect(() => {
     const userStr = localStorage.getItem("user")
     if (userStr) {
-      setUser(JSON.parse(userStr))
+      const parsedUser = JSON.parse(userStr)
+      setUser(parsedUser)
+      setProfile((prev) => ({
+        ...prev,
+        email: parsedUser.email || prev.email,
+        name: parsedUser.name || parsedUser.email?.split("@")[0] || prev.name,
+      }))
     }
   }, [])
 
-  const skills = [
-    { name: "React / Next.js", level: 95 },
-    { name: "TypeScript", level: 90 },
-    { name: "Python / FastAPI", level: 85 },
-    { name: "Node.js", level: 80 },
-    { name: "PostgreSQL", level: 75 },
-    { name: "Tailwind CSS", level: 98 }
-  ]
+  const parseResumeText = (text: string) => {
+    const lower = text.toLowerCase()
+    const skills = ["React", "TypeScript", "Node.js", "Python", "AWS", "GraphQL", "Docker", "SQL", "Next.js", "Tailwind"]
+      .filter((skill) => lower.includes(skill.toLowerCase()))
 
-  const metrics = [
-    { label: "Avg. ATS Score", val: "88%", icon: Target, color: "text-red-600", bg: "bg-red-100" },
-    { label: "Interviews Aced", val: "12", icon: Zap, color: "text-yellow-600", bg: "bg-yellow-100" },
-    { label: "Skill Badges", val: "8", icon: Award, color: "text-emerald-600", bg: "bg-emerald-100" },
-    { label: "Integrity Rank", val: "99", icon: ShieldCheck, color: "text-cyan-600", bg: "bg-cyan-100" },
-  ]
+    const summary = text.split("\n").slice(0, 3).join(" ")
+    const nameMatch = text.match(/([A-Z][a-z]+\s[A-Z][a-z]+)/)
+    const ats = Math.min(95, Math.max(55, 70 + Math.round(skills.length * 3)))
+
+    setProfile((prev) => ({
+      ...prev,
+      name: nameMatch?.[0] || prev.name,
+      summary: summary || prev.summary,
+      skills: skills.length > 0 ? skills : prev.skills,
+      ats_score: ats,
+      resume_url: resumeFile ? URL.createObjectURL(resumeFile) : prev.resume_url,
+    }))
+    setLastParsed(new Date().toLocaleString())
+  }
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null
+    setResumeFile(file)
+
+    if (!file) {
+      setResumeText("")
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const text = e.target?.result as string
+      setResumeText(text)
+      parseResumeText(text)
+    }
+    reader.readAsText(file)
+  }
+
+  const handleAnalyze = async () => {
+    if (!resumeFile && !resumeText) {
+      alert("Upload a resume first.")
+      return
+    }
+
+    setLoading(true)
+    try {
+      const formData = new FormData()
+      if (resumeFile) {
+        formData.append("resume", resumeFile)
+      }
+      formData.append("content", resumeText)
+      const storedUser = localStorage.getItem("user")
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser)
+        formData.append("user_id", String(parsedUser.id))
+      }
+
+      const response = await api.post("/analyze", formData)
+      const data = response.data
+      setProfile((prev) => ({
+        ...prev,
+        name: data.name ?? prev.name,
+        title: data.title ?? prev.title,
+        location: data.location ?? prev.location,
+        email: data.email ?? prev.email,
+        phone: data.phone ?? prev.phone,
+        summary: data.summary ?? prev.summary,
+        skills: data.skills ?? prev.skills,
+        experience: data.experience ?? prev.experience,
+        projects: data.projects ?? prev.projects,
+        ats_score: data.ats_score ?? prev.ats_score,
+        resume_url: data.resume_url ?? prev.resume_url,
+      }))
+      setLastParsed(new Date().toLocaleString())
+    } catch (err) {
+      console.warn("Profile analyze failed, using extracted values.", err)
+      if (resumeText) {
+        parseResumeText(resumeText)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <SketchyDashboardLayout 
+    <SketchyDashboardLayout
       title="My Profile"
       role="INDIVIDUAL"
       headerAction={
         <Button variant="outline" size="sm" className="rounded-xl font-bold gap-2 text-slate-900 border-2 border-slate-900">
-          <Settings className="w-4 h-4" />
-          Edit Profile
+          <ShieldCheck className="w-4 h-4" />
+          Sync Resume
         </Button>
       }
     >
       <div className="max-w-7xl mx-auto space-y-10">
-            {/* Profile Header Card */}
-            <SketchyCard className="p-8 md:p-12 bg-slate-900 text-white border-slate-900 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-slate-700/20 rounded-full blur-[100px] -mr-32 -mt-32" />
-              <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-                <div className="relative group">
-                  <div className="w-40 h-40 rounded-[2.5rem] bg-yellow-300 border-4 border-white flex items-center justify-center text-5xl font-black text-slate-900 shadow-2xl group-hover:scale-105 transition-transform duration-500">
-                    {user?.email?.[0].toUpperCase() || "C"}
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-2xl bg-emerald-400 border-4 border-slate-900 flex items-center justify-center">
-                    <ShieldCheck className="w-5 h-5 text-slate-900" />
-                  </div>
-                </div>
+        <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Resume Profile</p>
+                <h1 className="text-4xl font-black text-slate-900 mt-3">{profile.name}</h1>
+                <p className="text-slate-500 mt-2">{profile.title} • {profile.location}</p>
+              </div>
+              <div className="space-y-2 text-right">
+                <Badge className="bg-emerald-100 text-emerald-700">ATS {profile.ats_score}%</Badge>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Last updated</p>
+                <p className="text-sm text-slate-700">{lastParsed || "Not scanned yet"}</p>
+              </div>
+            </div>
 
-                <div className="text-center md:text-left space-y-4">
-                  <div>
-                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">
-                      {user?.email?.split('@')[0] || "Candidate"}
-                    </h1>
-                    <p className="text-yellow-300 font-bold uppercase tracking-widest text-sm mt-2 flex items-center justify-center md:justify-start gap-2">
-                      <Briefcase className="w-4 h-4" />
-                      Full Stack Engineer
-                    </p>
+            <div className="mt-10 grid gap-6 sm:grid-cols-2">
+              <div className="space-y-3">
+                <h2 className="text-sm uppercase tracking-[0.35em] text-slate-400 font-bold">Contact</h2>
+                <div className="space-y-2 text-slate-700">
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-slate-400" />
+                    <span>{profile.email}</span>
                   </div>
-                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-slate-300 text-sm font-medium">
-                    <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-yellow-300" /> San Francisco, CA</span>
-                    <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-yellow-300" /> {user?.email}</span>
-                    <span className="flex items-center gap-2"><Phone className="w-4 h-4 text-yellow-300" /> +1 (555) 000-0000</span>
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-slate-400" />
+                    <span>{profile.phone}</span>
                   </div>
-                  <div className="flex items-center justify-center md:justify-start gap-3 pt-2">
-                    <Button size="icon" className="rounded-xl border-2 border-white/20 hover:bg-white/10 text-white bg-transparent">
-                      <GitBranch className="w-4 h-4" />
-                    </Button>
-                    <Button size="icon" className="rounded-xl border-2 border-white/20 hover:bg-white/10 text-white bg-transparent">
-                      <Users className="w-4 h-4" />
-                    </Button>
-                    <Button size="icon" className="rounded-xl border-2 border-white/20 hover:bg-white/10 text-white bg-transparent">
-                      <Globe className="w-4 h-4" />
-                    </Button>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-slate-400" />
+                    <span>{profile.location}</span>
                   </div>
                 </div>
+              </div>
+              <div className="space-y-3">
+                <h2 className="text-sm uppercase tracking-[0.35em] text-slate-400 font-bold">Resume Link</h2>
+                {profile.resume_url ? (
+                  <a href={profile.resume_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-slate-900 font-semibold underline">
+                    <ExternalLink className="w-4 h-4" />
+                    View uploaded resume
+                  </a>
+                ) : (
+                  <p className="text-slate-500">Upload a resume to generate a live preview link.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-10 space-y-4">
+              <h2 className="text-xl font-black text-slate-900">Summary</h2>
+              <p className="text-slate-600 leading-relaxed">{profile.summary}</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <SketchyCard className="p-8">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Resume Upload</p>
+                  <h2 className="text-2xl font-black text-slate-900">Load Your Latest CV</h2>
+                </div>
+              </div>
+
+              <div className="mt-8 space-y-4">
+                <label className="block rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center cursor-pointer hover:border-slate-900 transition-all">
+                  <input type="file" accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={handleFileChange} />
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-slate-100 text-slate-900">
+                    <FileText className="w-7 h-7" />
+                  </div>
+                  <p className="text-sm font-semibold text-slate-900">{resumeFile ? resumeFile.name : "Click to upload your resume"}</p>
+                  <p className="text-sm text-slate-500">PDF, DOC, DOCX or TXT</p>
+                </label>
+
+                <Button onClick={handleAnalyze} disabled={loading} className="w-full rounded-3xl bg-slate-900 hover:bg-black text-white py-4 font-bold">
+                  {loading ? "Parsing resume..." : "Parse Resume"}
+                </Button>
               </div>
             </SketchyCard>
 
-            {/* Content Grid */}
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Left Column: Skills & Stats */}
-              <div className="lg:col-span-1 space-y-8">
-                {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-4">
-                  {metrics.map((m, i) => (
-                    <SketchyMetricCard 
-                      key={i}
-                      label={m.label}
-                      value={m.val}
-                      icon={m.icon}
-                      color={m.color}
-                      bgColor={m.bg}
-                    />
-                  ))}
+            <SketchyCard className="p-8">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Skills</p>
+                  <h2 className="text-2xl font-black text-slate-900">Your Top Keywords</h2>
                 </div>
-
-                {/* Technical Skills */}
-                <SketchyCard className="p-8 space-y-8">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold text-slate-900 uppercase flex items-center gap-2">
-                      <Code2 className="w-5 h-5 text-slate-900" />
-                      Skills Profile
-                    </h3>
-                    <Badge className="bg-slate-900 text-white rounded-lg font-bold text-xs">Expert</Badge>
-                  </div>
-                  <div className="space-y-6">
-                    {skills.map((skill, i) => (
-                      <div key={i} className="space-y-2">
-                        <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700">
-                          <span>{skill.name}</span>
-                          <span className="text-slate-900 font-black">{skill.level}%</span>
-                        </div>
-                        <Progress value={skill.level} className="h-2 bg-slate-300" />
-                      </div>
-                    ))}
-                  </div>
-                  <Button className="w-full text-slate-900 font-bold uppercase tracking-widest text-xs bg-slate-100 hover:bg-yellow-300 rounded-xl border-2 border-slate-900">
-                    Add New Skill
-                  </Button>
-                </SketchyCard>
+                <Badge className="bg-emerald-100 text-emerald-700 uppercase tracking-widest text-xs px-3 py-2 rounded-full">
+                  {profile.skills.length}
+                </Badge>
               </div>
-
-              {/* Right Column: Experience & Projects */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* About Section */}
-                <SketchyCard className="p-8 md:p-10">
-                  <h3 className="text-xl font-bold text-slate-900 uppercase mb-6">Professional Summary</h3>
-                  <p className="text-slate-600 font-medium leading-relaxed">
-                    Dynamic and results-driven Software Engineer with over 5 years of experience in building scalable web applications. 
-                    Specialized in modern JavaScript frameworks and AI integration. Proven track record of optimizing system 
-                    performance and delivering premium user experiences through clean, efficient code.
-                  </p>
-                </SketchyCard>
-
-                {/* Experience */}
-                <SketchyCard className="p-8 md:p-10">
-                  <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-xl font-bold text-slate-900 uppercase">Recent Experience</h3>
-                    <Button variant="ghost" size="sm" className="text-slate-900 font-bold uppercase text-xs">View All</Button>
-                  </div>
-                  <div className="space-y-10">
-                    {[
-                      { 
-                        role: "Senior Software Engineer", 
-                        company: "TechFlow Systems", 
-                        period: "2021 - Present",
-                        desc: "Architected and led the development of a real-time analytics dashboard used by 50k+ daily active users."
-                      },
-                      { 
-                        role: "Full Stack Developer", 
-                        company: "Innovate AI", 
-                        period: "2019 - 2021",
-                        desc: "Integrated Large Language Models into core product features, improving user engagement by 40%."
-                      }
-                    ].map((exp, i) => (
-                      <div key={i} className="relative pl-8 border-l-3 border-slate-900 last:border-0 pb-10 last:pb-0">
-                        <div className="absolute left-[-7.5px] top-0 w-4 h-4 rounded-full bg-white border-3 border-slate-900" />
-                        <div className="space-y-2">
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                            <h4 className="font-black text-slate-900 text-lg tracking-tight">{exp.role}</h4>
-                            <span className="text-xs font-bold text-white bg-slate-900 px-3 py-1 rounded-full uppercase tracking-wider">
-                              {exp.period}
-                            </span>
-                          </div>
-                          <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">{exp.company}</p>
-                          <p className="text-sm text-slate-600 font-medium leading-relaxed mt-3">{exp.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </SketchyCard>
-
-                {/* Resume Actions */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <SketchyCard className="p-8 border-3 border-dashed border-slate-400 bg-white group flex items-center justify-center">
-                    <div className="text-center space-y-4">
-                      <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto shadow-sm group-hover:scale-110 transition-transform border-2 border-slate-300">
-                        <FileText className="w-6 h-6 text-slate-900" />
-                      </div>
-                      <p className="font-bold text-slate-900 uppercase tracking-widest text-xs">Upload Latest Resume</p>
-                    </div>
-                  </SketchyCard>
-                  <SketchyCard className="p-8 border-3 border-dashed border-slate-300 group flex items-center justify-center">
-                    <div className="text-center space-y-4">
-                      <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto shadow-sm group-hover:scale-110 transition-transform border-2 border-slate-300">
-                        <ExternalLink className="w-6 h-6 text-slate-600 group-hover:text-slate-900" />
-                      </div>
-                      <p className="font-bold text-slate-600 group-hover:text-slate-900 uppercase tracking-widest text-xs">Sync Portfolio Data</p>
-                    </div>
-                  </SketchyCard>
-                </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                {profile.skills.map((skill) => (
+                  <span key={skill} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-800">
+                    {skill}
+                  </span>
+                ))}
               </div>
-            </div>
+            </SketchyCard>
           </div>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <SketchyCard className="p-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Experience</p>
+                <h2 className="text-2xl font-black text-slate-900">Career Highlights</h2>
+              </div>
+              <Badge className="bg-slate-100 text-slate-900 uppercase tracking-widest text-xs px-3 py-2 rounded-full">{profile.experience.length} roles</Badge>
+            </div>
+            <div className="space-y-6">
+              {profile.experience.map((exp) => (
+                <div key={exp.role} className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-black text-slate-900">{exp.role}</h3>
+                      <p className="text-sm text-slate-500 uppercase tracking-wider">{exp.company}</p>
+                    </div>
+                    <span className="text-xs uppercase tracking-[0.35em] text-slate-400">{exp.period}</span>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed">{exp.description}</p>
+                </div>
+              ))}
+            </div>
+          </SketchyCard>
+
+          <SketchyCard className="p-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Projects</p>
+                <h2 className="text-2xl font-black text-slate-900">Recent Work</h2>
+              </div>
+              <Badge className="bg-slate-100 text-slate-900 uppercase tracking-widest text-xs px-3 py-2 rounded-full">{profile.projects.length}</Badge>
+            </div>
+            <div className="space-y-6">
+              {profile.projects.map((project) => (
+                <div key={project.title} className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-lg font-black text-slate-900">{project.title}</h3>
+                    <Badge className="bg-slate-900 text-white uppercase tracking-widest text-[10px] px-3 py-2 rounded-full">Featured</Badge>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed">{project.description}</p>
+                </div>
+              ))}
+            </div>
+          </SketchyCard>
+        </div>
+      </div>
     </SketchyDashboardLayout>
   )
 }

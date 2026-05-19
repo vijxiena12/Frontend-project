@@ -28,7 +28,9 @@ function Dashboard() {
     ],
     stats: {
       totalAnalyzed: 12,
-      averageScore: 85,
+      averageFitness: 85,
+      assessments: 8,
+      atsCompatibility: 78,
       bestScore: 95
     }
   });
@@ -60,7 +62,9 @@ function Dashboard() {
         breakdown: {
           overallMatch: 87,
           skillMatch: 92,
-          experience: 82
+          experience: 82,
+          keywords: 78,
+          formatting: 88
         },
         matchingSkills: ["React", "JavaScript", "TypeScript", "Node.js", "MongoDB"],
         missingSkills: ["GraphQL", "AWS", "Docker"],
@@ -218,59 +222,203 @@ function Dashboard() {
     if (activeTab === "dashboard") {
       return (
         <div className="space-y-6">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
-            <h2 className="text-2xl font-bold mb-2">Welcome back, {user?.fullName || user?.email}!</h2>
-            <p className="text-blue-100">Ready to optimize your resume for your dream job?</p>
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-6 text-white">
+            <h2 className="text-3xl font-bold mb-2">Candidate Dashboard</h2>
+            <p className="text-blue-100 max-w-2xl">Track your resume fitness, scan against job descriptions, and get AI-powered optimization guidance from one clean workspace.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">📊</span>
-                </div>
-                <span className="text-2xl font-bold text-blue-600">{candidateData.stats.totalAnalyzed}</span>
-              </div>
-              <h3 className="font-semibold text-gray-900">Total Analyzed</h3>
-              <p className="text-sm text-gray-600">Resumes analyzed</p>
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-200">
+              <p className="text-xs uppercase tracking-[0.25em] text-slate-400 mb-3">Average Fitness</p>
+              <div className="text-4xl font-bold text-slate-900">{candidateData.stats.averageFitness}%</div>
+              <p className="text-sm text-slate-500 mt-2">How well your resume matches recent analyses.</p>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">📈</span>
-                </div>
-                <span className="text-2xl font-bold text-green-600">{candidateData.stats.averageScore}%</span>
-              </div>
-              <h3 className="font-semibold text-gray-900">Average Score</h3>
-              <p className="text-sm text-gray-600">Match percentage</p>
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-200">
+              <p className="text-xs uppercase tracking-[0.25em] text-slate-400 mb-3">Assessments</p>
+              <div className="text-4xl font-bold text-slate-900">{candidateData.stats.assessments}</div>
+              <p className="text-sm text-slate-500 mt-2">Total resume or job scans completed.</p>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">🏆</span>
-                </div>
-                <span className="text-2xl font-bold text-purple-600">{candidateData.stats.bestScore}%</span>
-              </div>
-              <h3 className="font-semibold text-gray-900">Best Score</h3>
-              <p className="text-sm text-gray-600">Highest match</p>
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-200">
+              <p className="text-xs uppercase tracking-[0.25em] text-slate-400 mb-3">ATS Compatibility</p>
+              <div className="text-4xl font-bold text-slate-900">{candidateData.stats.atsCompatibility}%</div>
+              <p className="text-sm text-slate-500 mt-2">Estimated applicant tracking score.</p>
             </div>
-          </div>
+          </section>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-            <div className="space-y-3">
-              {candidateData.history.slice(0, 3).map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-gray-900">{item.position}</p>
-                    <p className="text-sm text-gray-600">{item.date}</p>
+          <section className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400 mb-2">AI Resume Insights</p>
+                <h3 className="text-xl font-semibold text-slate-900">AI Suggestions</h3>
+                <p className="mt-2 text-sm text-slate-600 max-w-2xl">Use our AI engine to get instant recommendations for improving your resume, identifying missing skills, and boosting ATS performance.</p>
+              </div>
+
+              <button
+                onClick={handleAnalyzeResume}
+                disabled={candidateData.isAnalyzing}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {candidateData.isAnalyzing ? "Running Analysis..." : "Run Analysis"}
+              </button>
+            </div>
+
+            {candidateData.analysisResult ? (
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {candidateData.analysisResult.suggestions.slice(0, 3).map((suggestion, index) => (
+                  <div key={index} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-700">{suggestion}</p>
                   </div>
-                  <div className="text-right">
-                    <span className={`text-lg font-bold ${
-                      item.score >= 90 ? 'text-green-600' : 
-                      item.score >= 80 ? 'text-blue-600' : 'text-orange-600'
+                ))}
+              </div>
+            ) : (
+              <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-slate-600">
+                Upload a resume and paste a job description to see tailored AI suggestions here.
+              </div>
+            )}
+          </section>
+
+          <section className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6">
+            <div className="space-y-6">
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Upload Resume</h3>
+                <label htmlFor="resume-upload" className="group block cursor-pointer rounded-3xl border border-dashed border-slate-300 p-8 text-center transition hover:border-blue-400">
+                  <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-slate-100 text-blue-600 flex items-center justify-center text-2xl">📄</div>
+                  <p className="text-sm font-semibold text-slate-900">Click to upload a resume</p>
+                  <p className="text-sm text-slate-500 mt-2">PDF, DOC, DOCX or TXT. Max 10MB.</p>
+                  <input id="resume-upload" type="file" accept=".txt,.pdf,.doc,.docx" onChange={handleFileUpload} className="hidden" />
+                </label>
+                {candidateData.resumeText && (
+                  <p className="mt-3 text-sm text-emerald-600">Resume uploaded successfully.</p>
+                )}
+              </div>
+
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Paste JD</h3>
+                <textarea
+                  value={candidateData.jobDescription}
+                  onChange={(e) => setCandidateData(prev => ({ ...prev, jobDescription: e.target.value }))}
+                  placeholder="Paste the job description here..."
+                  className="min-h-[220px] w-full rounded-3xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-slate-900">Resume Preview</h3>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-500">Live</span>
+              </div>
+              <div className="min-h-[420px] rounded-3xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 overflow-y-auto">
+                <pre className="whitespace-pre-wrap">{candidateData.analysisResult?.highlightedResume || candidateData.resumeText || "Upload a resume to preview the parsed text here."}</pre>
+              </div>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-semibold text-slate-900">Score Breakdown</h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div className="rounded-3xl border border-slate-200 bg-white p-5">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400 mb-3">Skills</p>
+                <p className="text-3xl font-bold text-slate-900">{candidateData.analysisResult?.breakdown.skillMatch ?? 0}%</p>
+              </div>
+              <div className="rounded-3xl border border-slate-200 bg-white p-5">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400 mb-3">Experience</p>
+                <p className="text-3xl font-bold text-slate-900">{candidateData.analysisResult?.breakdown.experience ?? 0}%</p>
+              </div>
+              <div className="rounded-3xl border border-slate-200 bg-white p-5">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400 mb-3">Keywords</p>
+                <p className="text-3xl font-bold text-slate-900">{candidateData.analysisResult?.breakdown.keywords ?? 0}%</p>
+              </div>
+              <div className="rounded-3xl border border-slate-200 bg-white p-5">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400 mb-3">Formatting</p>
+                <p className="text-3xl font-bold text-slate-900">{candidateData.analysisResult?.breakdown.formatting ?? 0}%</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">Matched Skills</h3>
+              <div className="flex flex-wrap gap-2">
+                {candidateData.analysisResult?.matchingSkills.map((skill, index) => (
+                  <span key={index} className="rounded-full bg-emerald-100 px-3 py-1 text-sm text-emerald-700">{skill}</span>
+                )) || <p className="text-sm text-slate-500">No matched skills yet.</p>}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">Missing Skills</h3>
+              <div className="flex flex-wrap gap-2">
+                {candidateData.analysisResult?.missingSkills.map((skill, index) => (
+                  <span key={index} className="rounded-full bg-rose-100 px-3 py-1 text-sm text-rose-700">{skill}</span>
+                )) || <p className="text-sm text-slate-500">No missing skills yet.</p>}
+              </div>
+            </div>
+          </section>
+
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Analytics</p>
+                  <h3 className="text-lg font-semibold text-slate-900">Charts</h3>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm text-slate-500"><span>Resume Match</span><span>{candidateData.analysisResult?.finalScore ?? 0}%</span></div>
+                  <div className="h-3 rounded-full bg-slate-200 overflow-hidden">
+                    <div className="h-full rounded-full bg-blue-600" style={{ width: `${candidateData.analysisResult?.finalScore ?? 0}%` }} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm text-slate-500"><span>Keyword Coverage</span><span>{candidateData.analysisResult?.breakdown.keywords ?? 0}%</span></div>
+                  <div className="h-3 rounded-full bg-slate-200 overflow-hidden">
+                    <div className="h-full rounded-full bg-indigo-600" style={{ width: `${candidateData.analysisResult?.breakdown.keywords ?? 0}%` }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Analytics</p>
+                  <h3 className="text-lg font-semibold text-slate-900">Trends</h3>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm text-slate-600">Resume updates this week</p>
+                  <p className="mt-2 text-3xl font-bold text-slate-900">+12%</p>
+                </div>
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm text-slate-600">ATS score trend</p>
+                  <p className="mt-2 text-3xl font-bold text-slate-900">+7%</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900">Recent History</h3>
+            </div>
+            <div className="space-y-3">
+              {candidateData.history.map((item, index) => (
+                <div key={index} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="font-semibold text-slate-900">{item.position}</p>
+                      <p className="text-sm text-slate-500">{item.date}</p>
+                    </div>
+                    <span className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                      item.score >= 90 ? 'bg-emerald-100 text-emerald-700' :
+                      item.score >= 80 ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
                     }`}>
                       {item.score}%
                     </span>
@@ -278,7 +426,7 @@ function Dashboard() {
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         </div>
       );
     }

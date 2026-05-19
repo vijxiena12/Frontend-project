@@ -116,24 +116,61 @@ function WorkspaceStep({ onComplete }: { onComplete: (data: any, sid: string) =>
   const [title, setTitle] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const handleRun = async () => {
-    if (!file || !jd) return
-    setLoading(true)
-    try {
-      const formData = new FormData()
-      formData.append("resume", file)
-      formData.append("jd_text", jd)
-      formData.append("job_title", title || "Target Role")
-      
-      const res = await api.post(`/screen`, formData)
-      onComplete(res.data.data, res.data.session_id)
-    } catch (err) {
-      console.error(err)
-      alert("Backend Error: Ensure FastAPI server is running on localhost:8000")
-    } finally {
-      setLoading(false)
-    }
+const handleRun = async () => {
+
+  if (!file || !jd) {
+    alert("Please upload resume and paste JD")
+    return
   }
+
+  setLoading(true)
+
+  try {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    // Mock analysis data
+    const mockData = {
+      finalScore: 87,
+      breakdown: {
+        overallMatch: 87,
+        skillMatch: 92,
+        experience: 82,
+        keywords: 78,
+        formatting: 88
+      },
+      matchingSkills: ["React", "JavaScript", "TypeScript", "Node.js", "MongoDB"],
+      missingSkills: ["GraphQL", "AWS", "Docker"],
+      suggestions: [
+        "Add GraphQL experience to your resume",
+        "Consider getting AWS certification",
+        "Include more project descriptions with quantifiable results",
+        "Highlight your experience with microservices architecture"
+      ],
+      highlightedResume: "Sample parsed resume content for display",
+      jobTitle: title || "Target Role"
+    }
+
+    console.log("Mock analysis complete:", mockData)
+
+    // TEMP SESSION ID
+    const mockSessionId = Date.now().toString()
+
+    // GO TO NEXT STEP
+    onComplete(mockData, mockSessionId)
+
+  } catch (error: any) {
+
+    console.error("Error:", error)
+
+    alert(error.message || "Analysis failed")
+
+  } finally {
+
+    setLoading(false)
+
+  }
+}
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
