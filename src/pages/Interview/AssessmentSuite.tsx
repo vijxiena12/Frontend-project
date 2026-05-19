@@ -33,6 +33,9 @@ import { Label } from "@/components/ui/label"
 import { ATSCard } from "@/components/ui/ATSCard"
 import { api } from "@/lib/api"
 import { ProctorStream } from "@/components/interview/ProctorStream"
+import { SketchyDashboardLayout } from "@/components/SketchyDashboardLayout"
+import { SketchyCard } from "@/components/SketchyCard"
+import { SquiggleFilter, GraphPaper } from "@/components/ui/Sketchy"
 
 type Step = "workspace" | "setup" | "interview" | "test" | "report"
 
@@ -70,21 +73,24 @@ export default function AssessmentSuite() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="bg-slate-50/50">
-        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 bg-white/80 backdrop-blur-md px-4 border-b border-sidebar-border/60">
+      <SidebarInset className="bg-[#f8efe2] relative overflow-hidden">
+        <SquiggleFilter />
+        <GraphPaper />
+        
+        <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 bg-[#f8efe2]/95 backdrop-blur-sm px-4 border-b-2 border-slate-900/20">
           <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Separator orientation="vertical" className="mr-2 h-4 bg-slate-900/20" />
           <div className="flex-1">
-             <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">AI Proctored Assessment</h2>
+             <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-mono">AI Proctored Assessment</h2>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-white font-bold text-[10px] uppercase tracking-widest text-indigo-600 border-indigo-100">
+            <Badge className="bg-slate-900 text-white font-bold text-xs uppercase tracking-widest rounded-lg border-2 border-slate-900">
               {step.replace("_", " ")}
             </Badge>
           </div>
         </header>
 
-        <main className="p-6 md:p-10 lg:p-12 w-full max-w-[1600px] mx-auto min-h-[calc(100svh-4rem)]">
+        <main className="p-6 md:p-10 lg:p-12 w-full max-w-[1600px] mx-auto min-h-[calc(100svh-4rem)] relative z-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
@@ -140,10 +146,10 @@ function WorkspaceStep({ onComplete }: { onComplete: (data: any, sid: string) =>
         <div className="space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Candidate Resume (PDF)</label>
-            <div className="border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center hover:border-indigo-400 hover:bg-slate-50/50 transition-all cursor-pointer group">
+            <div className="border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center hover:border-red-400 hover:bg-slate-50/50 transition-all cursor-pointer group">
               <input type="file" className="hidden" id="resume-upload" onChange={(e) => setFile(e.target.files?.[0] || null)} />
               <label htmlFor="resume-upload" className="cursor-pointer space-y-4 block">
-                <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
                   <FileText className="w-8 h-8" />
                 </div>
                 <div>
@@ -165,14 +171,14 @@ function WorkspaceStep({ onComplete }: { onComplete: (data: any, sid: string) =>
             <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Job Description</label>
             <textarea 
               placeholder="Paste the job description requirements here..."
-              className="w-full h-40 p-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all resize-none font-medium text-slate-600"
+              className="w-full h-40 p-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all resize-none font-medium text-slate-600"
               value={jd}
               onChange={(e) => setJd(e.target.value)}
             />
           </div>
 
           <Button 
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-8 rounded-2xl shadow-lg shadow-indigo-200 gap-2 text-lg"
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-8 rounded-2xl shadow-lg shadow-red-200 gap-2 text-lg"
             onClick={handleRun}
             disabled={loading || !file || !jd}
           >
@@ -202,11 +208,11 @@ function SetupStep({ onStart }: { onStart: () => void }) {
 
       <div className="grid grid-cols-2 gap-4">
         <Card className="p-6 border-slate-200 rounded-2xl flex flex-col items-center gap-3">
-          <Video className="w-6 h-6 text-indigo-600" />
+          <Video className="w-6 h-6 text-red-600" />
           <span className="text-xs font-bold uppercase text-slate-400">Camera Active</span>
         </Card>
         <Card className="p-6 border-slate-200 rounded-2xl flex flex-col items-center gap-3">
-          <Mic className="w-6 h-6 text-indigo-600" />
+          <Mic className="w-6 h-6 text-red-600" />
           <span className="text-xs font-bold uppercase text-slate-400">Mic Ready</span>
         </Card>
       </div>
@@ -302,7 +308,7 @@ function InterviewStep({ sessionId, data, onComplete }: { sessionId: string, dat
         <Card className="p-6 border-slate-200 rounded-3xl bg-white space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-slate-900 flex items-center gap-2">
-              <Mic className="w-4 h-4 text-indigo-600" />
+              <Mic className="w-4 h-4 text-red-600" />
               Voice Interaction
             </h3>
             <Badge variant="outline" className={isListening ? "bg-rose-50 text-rose-600 border-rose-100" : ""}>
@@ -313,7 +319,7 @@ function InterviewStep({ sessionId, data, onComplete }: { sessionId: string, dat
             <Button 
               onClick={startSTT}
               disabled={isListening}
-              className={`flex-1 h-14 rounded-2xl font-bold transition-all ${isListening ? "bg-rose-500" : "bg-indigo-600 hover:bg-indigo-700"}`}
+              className={`flex-1 h-14 rounded-2xl font-bold transition-all ${isListening ? "bg-rose-500" : "bg-red-600 hover:bg-red-700"}`}
             >
               {isListening ? (
                 <>
@@ -337,7 +343,7 @@ function InterviewStep({ sessionId, data, onComplete }: { sessionId: string, dat
               className="h-14 w-14 rounded-2xl border-2"
               onClick={() => speakText(allQs[currentQIdx])}
             >
-              <Volume2 className="w-6 h-6 text-indigo-600" />
+              <Volume2 className="w-6 h-6 text-red-600" />
             </Button>
           </div>
           <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest text-center">Use your voice or type below to answer</p>
@@ -345,15 +351,15 @@ function InterviewStep({ sessionId, data, onComplete }: { sessionId: string, dat
       </div>
 
       {/* Right: Question Area */}
-      <Card className="lg:col-span-3 flex flex-col border-slate-200 rounded-[2.5rem] overflow-hidden bg-white shadow-2xl shadow-slate-200/40 border-2 border-indigo-100">
-        <div className="p-8 border-b border-slate-100 bg-indigo-50/30 flex items-center justify-between">
+      <Card className="lg:col-span-3 flex flex-col border-slate-200 rounded-[2.5rem] overflow-hidden bg-white shadow-2xl shadow-slate-200/40 border-2 border-red-100">
+        <div className="p-8 border-b border-slate-100 bg-red-50/30 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200">
+            <div className="w-12 h-12 rounded-2xl bg-red-600 text-white flex items-center justify-center shadow-lg shadow-red-200">
               <BrainCircuit className="w-7 h-7" />
             </div>
             <div>
               <h3 className="text-xl font-bold text-slate-900">AI Interviewer</h3>
-              <p className="text-xs text-indigo-500 font-bold uppercase tracking-widest">Question {currentQIdx + 1} of {allQs.length}</p>
+              <p className="text-xs text-red-500 font-bold uppercase tracking-widest">Question {currentQIdx + 1} of {allQs.length}</p>
             </div>
           </div>
           <Progress value={((currentQIdx + 1) / allQs.length) * 100} className="w-32 h-2" />
@@ -371,7 +377,7 @@ function InterviewStep({ sessionId, data, onComplete }: { sessionId: string, dat
               <h2 className="text-3xl font-black text-slate-900 leading-tight">
                 {allQs[currentQIdx]}
               </h2>
-              <div className="w-20 h-1 bg-indigo-500 mx-auto rounded-full opacity-20" />
+              <div className="w-20 h-1 bg-red-500 mx-auto rounded-full opacity-20" />
             </motion.div>
           </AnimatePresence>
 
@@ -379,7 +385,7 @@ function InterviewStep({ sessionId, data, onComplete }: { sessionId: string, dat
             <motion.div 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }}
-              className="w-full max-w-xl p-6 rounded-3xl bg-slate-50 border-2 border-indigo-100 italic text-slate-600"
+              className="w-full max-w-xl p-6 rounded-3xl bg-slate-50 border-2 border-red-100 italic text-slate-600"
             >
               "{input}"
             </motion.div>
@@ -396,7 +402,7 @@ function InterviewStep({ sessionId, data, onComplete }: { sessionId: string, dat
                   setInput(e.target.value)
                   if(e.target.value) setIsAnswering(true)
                 }}
-                className="h-16 rounded-2xl border-2 border-slate-200 focus-visible:ring-indigo-500 text-lg px-6"
+                className="h-16 rounded-2xl border-2 border-slate-200 focus-visible:ring-red-500 text-lg px-6"
               />
               <Button 
                 className="absolute right-2 top-2 h-12 px-6 bg-slate-900 hover:bg-black rounded-xl"
@@ -512,12 +518,12 @@ function TestStep({ sessionId, data, interviewAnswers, onComplete }: { sessionId
             <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
               Part 1: Technical MCQs
             </h2>
-            <Badge className="bg-indigo-100 text-indigo-700">{assessment.mcqs.length} Questions</Badge>
+            <Badge className="bg-red-100 text-red-700">{assessment.mcqs.length} Questions</Badge>
           </div>
           
           <div className="space-y-4">
             {assessment.mcqs.map((q: any) => (
-              <Card key={q.id} className="p-8 border-slate-200 rounded-[2rem] bg-white shadow-sm hover:shadow-md transition-all border-2 hover:border-indigo-100">
+              <Card key={q.id} className="p-8 border-slate-200 rounded-[2rem] bg-white shadow-sm hover:shadow-md transition-all border-2 hover:border-red-100">
                 <p className="font-bold text-slate-800 text-lg mb-6 leading-relaxed">{q.id}. {q.question}</p>
                 <RadioGroup 
                   onValueChange={(val) => setAnswers(prev => ({...prev, [q.id]: val}))}
@@ -525,7 +531,7 @@ function TestStep({ sessionId, data, interviewAnswers, onComplete }: { sessionId
                 >
                   {q.options.map((opt: string, idx: number) => (
                     <div key={idx} className={`flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all ${
-                      answers[q.id] === opt ? "bg-indigo-50 border-indigo-200" : "bg-white border-slate-100 hover:border-slate-200"
+                      answers[q.id] === opt ? "bg-red-50 border-red-200" : "bg-white border-slate-100 hover:border-slate-200"
                     }`}>
                       <RadioGroupItem value={opt} id={`q-${q.id}-${idx}`} />
                       <Label htmlFor={`q-${q.id}-${idx}`} className="flex-1 cursor-pointer font-bold text-slate-700">{opt}</Label>
@@ -547,7 +553,7 @@ function TestStep({ sessionId, data, interviewAnswers, onComplete }: { sessionId
                 variant={language === "python" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setLanguage("python")}
-                className={language === "python" ? "bg-indigo-600" : ""}
+                className={language === "python" ? "bg-red-600" : ""}
               >
                 Python
               </Button>
@@ -555,7 +561,7 @@ function TestStep({ sessionId, data, interviewAnswers, onComplete }: { sessionId
                 variant={language === "cpp" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setLanguage("cpp")}
-                className={language === "cpp" ? "bg-indigo-600" : ""}
+                className={language === "cpp" ? "bg-red-600" : ""}
               >
                 C++
               </Button>
@@ -565,11 +571,11 @@ function TestStep({ sessionId, data, interviewAnswers, onComplete }: { sessionId
           <Card className="p-8 border-slate-200 rounded-[2.5rem] bg-slate-900 text-slate-300 relative overflow-hidden group border-4 border-slate-800">
             <div className="relative z-10 space-y-4">
               <div className="flex items-center justify-between">
-                <Badge className="bg-indigo-500 text-white font-bold px-4 py-1">{assessment.dsa.title}</Badge>
+                <Badge className="bg-red-500 text-white font-bold px-4 py-1">{assessment.dsa.title}</Badge>
                 <Code2 className="w-6 h-6 text-slate-700" />
               </div>
               <p className="text-slate-400 font-medium leading-relaxed text-lg">{assessment.dsa.description}</p>
-              <div className="bg-black/50 p-6 rounded-2xl font-mono text-sm text-indigo-300 border border-white/5">
+              <div className="bg-black/50 p-6 rounded-2xl font-mono text-sm text-red-300 border border-white/5">
                 {assessment.dsa.base_code}
               </div>
             </div>
@@ -623,9 +629,9 @@ function TestStep({ sessionId, data, interviewAnswers, onComplete }: { sessionId
         <Button 
           onClick={handleFinalize} 
           disabled={isFinalizing}
-          className="w-full bg-slate-900 hover:bg-black text-white font-bold py-12 rounded-[2.5rem] text-2xl shadow-2xl shadow-indigo-100 gap-4 transition-all hover:scale-[1.02] active:scale-95"
+          className="w-full bg-slate-900 hover:bg-black text-white font-bold py-12 rounded-[2.5rem] text-2xl shadow-2xl shadow-red-100 gap-4 transition-all hover:scale-[1.02] active:scale-95"
         >
-          {isFinalizing ? <Loader2 className="w-8 h-8 animate-spin" /> : <CheckCircle2 className="w-8 h-8 text-indigo-400" />}
+          {isFinalizing ? <Loader2 className="w-8 h-8 animate-spin" /> : <CheckCircle2 className="w-8 h-8 text-red-400" />}
           Finalize & View Report
         </Button>
       </div>
@@ -655,9 +661,9 @@ function ReportStep({ sessionId, onReset }: { sessionId: string, onReset: () => 
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-40 space-y-8">
       <div className="relative">
-        <Loader2 className="w-20 h-20 text-indigo-600 animate-spin" />
+        <Loader2 className="w-20 h-20 text-red-600 animate-spin" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <BrainCircuit className="w-8 h-8 text-indigo-400" />
+          <BrainCircuit className="w-8 h-8 text-red-400" />
         </div>
       </div>
       <div className="text-center space-y-2">
@@ -691,7 +697,7 @@ function ReportStep({ sessionId, onReset }: { sessionId: string, onReset: () => 
       {/* Section 1: ATS Resume Suggestions & Strengths/Weaknesses */}
       <Card className="p-10 border-slate-200 rounded-[3rem] bg-white shadow-2xl shadow-slate-200/40 space-y-8">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center">
+          <div className="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center">
             <FileText className="w-6 h-6" />
           </div>
           <div>
@@ -886,7 +892,7 @@ function ReportStep({ sessionId, onReset }: { sessionId: string, onReset: () => 
       <Card className="mt-8 p-10 border-slate-200 rounded-[3rem] bg-white shadow-2xl shadow-slate-200/40 space-y-10">
         <div className="space-y-6">
           <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
-            <Target className="w-6 h-6 text-indigo-600" />
+            <Target className="w-6 h-6 text-red-600" />
             Technical MCQ Analysis
           </h3>
           <div className="space-y-4">
@@ -906,7 +912,7 @@ function ReportStep({ sessionId, onReset }: { sessionId: string, onReset: () => 
                   ))}
                 </div>
                 <p className="text-xs text-slate-500 italic bg-white p-3 rounded-xl border border-dashed">
-                  <span className="font-bold text-indigo-600 mr-2">Explanation:</span>
+                  <span className="font-bold text-red-600 mr-2">Explanation:</span>
                   {q.explanation}
                 </p>
               </div>
@@ -919,11 +925,11 @@ function ReportStep({ sessionId, onReset }: { sessionId: string, onReset: () => 
       <div className="space-y-8">
         <Card className="p-8 border-slate-200 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl">
           <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-            <BrainCircuit className="w-5 h-5 text-indigo-400" />
+            <BrainCircuit className="w-5 h-5 text-red-400" />
             Next Steps
           </h3>
           <div className="space-y-3">
-            <Button onClick={() => window.location.href='/individual/dashboard'} className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 rounded-xl">
+            <Button onClick={() => window.location.href='/individual/dashboard'} className="w-full bg-red-600 hover:bg-red-700 h-12 rounded-xl">
               Return to Dashboard
             </Button>
             <Button onClick={onReset} variant="outline" className="w-full h-12 rounded-xl border-2">

@@ -11,8 +11,8 @@ export default function PreviewPage() {
     <div className="min-h-screen bg-slate-50 font-sans">
       <nav className="h-20 border-b bg-white/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-8">
         <div className="flex items-center gap-2">
-          <Sparkles className="text-indigo-600 w-6 h-6" />
-          <span className="font-black text-xl tracking-tighter">SmartHire <span className="text-indigo-600">PREVIEW</span></span>
+          <Sparkles className="text-red-600 w-6 h-6" />
+          <span className="font-black text-xl tracking-tighter">SmartHire <span className="text-red-600">PREVIEW</span></span>
         </div>
         <Button asChild className="rounded-full bg-slate-900 font-bold">
           <Link to="/">Back to Home</Link>
@@ -21,7 +21,7 @@ export default function PreviewPage() {
 
       <main className="max-w-7xl mx-auto py-20 px-6">
         <div className="text-center mb-16 space-y-4">
-          <h1 className="text-5xl font-black text-slate-900 tracking-tight">Experience Both <span className="text-indigo-600">Worlds</span></h1>
+          <h1 className="text-5xl font-black text-slate-900 tracking-tight">Experience Both <span className="text-red-600">Worlds</span></h1>
           <p className="text-slate-500 text-lg font-medium">Toggle between the recruiter and candidate perspectives.</p>
         </div>
 
@@ -31,7 +31,7 @@ export default function PreviewPage() {
             <button
               onClick={() => setActiveTab("RECRUITER")}
               className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold transition-all ${
-                activeTab === "RECRUITER" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                activeTab === "RECRUITER" ? "bg-white text-red-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
               }`}
             >
               <Briefcase className="w-5 h-5" />
@@ -40,7 +40,7 @@ export default function PreviewPage() {
             <button
               onClick={() => setActiveTab("INDIVIDUAL")}
               className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold transition-all ${
-                activeTab === "INDIVIDUAL" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                activeTab === "INDIVIDUAL" ? "bg-white text-red-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
               }`}
             >
               <User className="w-5 h-5" />
@@ -95,7 +95,7 @@ export default function PreviewPage() {
             </div>
 
             <div className="pt-4 flex gap-4">
-              <Button asChild size="lg" className="rounded-xl h-14 px-8 bg-indigo-600 hover:bg-indigo-700 font-bold">
+              <Button asChild size="lg" className="rounded-xl h-14 px-8 bg-red-600 hover:bg-red-700 font-bold">
                 <Link to={activeTab === "RECRUITER" ? "/signup?role=RECRUITER" : "/signup?role=INDIVIDUAL"}>
                   Get Started as {activeTab === "RECRUITER" ? "Recruiter" : "Candidate"}
                   <ArrowRight className="w-5 h-5 ml-2" />

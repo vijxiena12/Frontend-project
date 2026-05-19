@@ -113,31 +113,31 @@ export function AppSidebar({ role: propsRole, ...props }: AppSidebarProps) {
   const navItems = userRole === "RECRUITER" ? recruiterNavItems : individualNavItems
 
   return (
-    <Sidebar variant="sidebar" className="border-r border-sidebar-border" {...props}>
-      <SidebarHeader className="h-20 flex items-center px-6 bg-sidebar border-b border-sidebar-border/50">
+    <Sidebar variant="sidebar" className="border-r-3 border-slate-900 bg-[#f8efe2]" {...props}>
+      <SidebarHeader className="h-20 flex items-center px-6 bg-[#f8efe2] border-b-3 border-slate-900">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-sm">
+          <div className="w-8 h-8 rounded-lg bg-red-500 flex items-center justify-center shadow-md border-2 border-slate-900" style={{ filter: "url(#squiggle)" }}>
             <BrainCircuit className="w-5 h-5 text-white" />
           </div>
           {state !== "collapsed" && (
-            <span className="font-bold text-xl tracking-tight text-slate-900">
+            <span className="font-bold text-xl tracking-tight text-slate-900 font-mono">
               SmartHire
             </span>
           )}
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-4 py-6 bg-sidebar">
+      <SidebarContent className="px-4 py-6 bg-[#f8efe2]">
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild
                 tooltip={item.title}
-                className="hover:bg-slate-200/50 data-[active=true]:bg-indigo-50 data-[active=true]:text-indigo-600 group transition-all duration-300"
+                className="hover:bg-yellow-200/40 data-[active=true]:bg-red-100 data-[active=true]:text-red-600 group transition-all duration-300 rounded-xl border-2 border-transparent hover:border-slate-900/20"
               >
                 <Link to={item.url} className="flex items-center gap-3 py-2">
-                  <item.icon className={cn("w-5 h-5 transition-colors group-hover:text-indigo-600")} />
-                  <span className="font-medium">{item.title}</span>
+                  <item.icon className={cn("w-5 h-5 transition-colors group-hover:text-red-600")} />
+                  <span className="font-medium text-slate-900 group-hover:text-red-600">{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -156,11 +156,11 @@ export function AppSidebar({ role: propsRole, ...props }: AppSidebarProps) {
                 <SidebarMenuButton
                   asChild
                   tooltip={item.title}
-                  className="hover:bg-slate-200/50 group transition-all duration-300"
+                  className="hover:bg-yellow-200/40 group transition-all duration-300 rounded-xl border-2 border-transparent hover:border-slate-900/20"
                 >
                   <Link to={item.url} className="flex items-center gap-3 py-2">
-                    <item.icon className="w-5 h-5 transition-colors group-hover:text-indigo-600 text-slate-500" />
-                    <span className="text-slate-600 group-hover:text-slate-900">{item.title}</span>
+                    <item.icon className="w-5 h-5 transition-colors group-hover:text-red-600 text-slate-700" />
+                    <span className="text-slate-700 group-hover:text-red-600 font-medium">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -168,17 +168,17 @@ export function AppSidebar({ role: propsRole, ...props }: AppSidebarProps) {
           </SidebarMenu>
         </div>
       </SidebarContent>
-      <SidebarFooter className="p-4 border-t border-sidebar-border bg-sidebar">
+      <SidebarFooter className="p-4 border-t-3 border-slate-900 bg-[#f8efe2]">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="w-full justify-start gap-3 hover:bg-rose-50 hover:text-rose-600 text-slate-600 group transition-all duration-300">
+            <SidebarMenuButton className="w-full justify-start gap-3 hover:bg-red-100 hover:text-red-600 text-slate-700 group transition-all duration-300 rounded-xl border-2 border-transparent hover:border-slate-900/20 font-medium">
               <LogOut className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-              <span className="font-medium">Logout</span>
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-      <SidebarRail />
+      <SidebarRail className="bg-[#f8efe2] border-l-2 border-slate-300" />
     </Sidebar>
   )
 }

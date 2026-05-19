@@ -62,7 +62,7 @@ export default function Settings() {
           <div className="flex-1">
             <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider italic">Settings</h2>
           </div>
-          <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2 h-9 px-4 rounded-xl font-bold italic shadow-sm">
+          <Button className="bg-red-600 hover:bg-red-700 gap-2 h-9 px-4 rounded-xl font-bold italic shadow-sm">
             <Save className="w-4 h-4" />
             Save Changes
           </Button>
@@ -85,7 +85,7 @@ export default function Settings() {
                 className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm"
               >
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
                     <section.icon className="w-6 h-6" />
                   </div>
                   <div>
@@ -102,7 +102,7 @@ export default function Settings() {
                         <Input 
                           defaultValue={field.value} 
                           type={field.type}
-                          className="rounded-xl border-slate-200 focus-visible:ring-indigo-500 font-medium h-12"
+                            className="rounded-xl border-slate-200 focus-visible:ring-red-500 font-medium h-12"
                         />
                       </div>
                     ))}
@@ -114,7 +114,7 @@ export default function Settings() {
                     {section.items.map(item => (
                       <button key={item} className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-50 hover:bg-slate-50 hover:border-slate-200 transition-all font-bold text-slate-700 text-sm group">
                         {item}
-                        <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-600 transition-colors" />
+                        <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-red-600 transition-colors" />
                       </button>
                     ))}
                   </div>
@@ -128,7 +128,7 @@ export default function Settings() {
                           <Label className="text-sm font-bold text-slate-800 tracking-tight">{s.label}</Label>
                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{s.desc}</p>
                         </div>
-                        <Switch defaultChecked={s.default} className="data-[state=checked]:bg-indigo-600" />
+                        <Switch defaultChecked={s.default} className="data-[state=checked]:bg-red-600" />
                       </div>
                     ))}
                   </div>

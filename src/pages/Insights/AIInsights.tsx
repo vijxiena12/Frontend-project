@@ -27,8 +27,8 @@ const insights = [
     description: "Candidates are lacking advanced React patterns like RSC and Server Actions in recent batches.",
     impact: "High",
     icon: Target,
-    color: "text-indigo-600",
-    bg: "bg-indigo-50"
+    color: "text-red-600",
+    bg: "bg-red-50"
   },
   {
     title: "Source Quality",
@@ -63,7 +63,7 @@ export default function AIInsights() {
 
         <main className="p-8 md:p-12 lg:p-16 space-y-10 w-full max-w-[1600px] min-h-[calc(100svh-4rem)]">
           {/* Hero Section */}
-          <div className="relative p-8 md:p-12 rounded-[2.5rem] bg-indigo-600 text-white overflow-hidden shadow-2xl shadow-indigo-200">
+          <div className="relative p-8 md:p-12 rounded-[2.5rem] bg-red-600 text-white overflow-hidden shadow-2xl shadow-red-200">
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[80px] -mr-32 -mt-32" />
             <div className="relative z-10 max-w-2xl">
               <div className="flex items-center gap-2 mb-6">
@@ -72,7 +72,7 @@ export default function AIInsights() {
                 </div>
               </div>
               <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">Smart Intelligence</h1>
-              <p className="text-indigo-100 text-lg font-medium leading-relaxed">
+              <p className="text-red-100 text-lg font-medium leading-relaxed">
                 Our AI analyzes thousands of data points to give you actionable insights into your hiring process and candidate quality.
               </p>
             </div>
@@ -87,17 +87,17 @@ export default function AIInsights() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 key={item.title}
-                className="group p-8 rounded-3xl bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-50 transition-all text-left"
+                className="group p-8 rounded-3xl bg-white border border-slate-200 hover:border-red-300 hover:shadow-xl hover:shadow-red-50 transition-all text-left"
               >
                 <div className={`w-12 h-12 rounded-2xl ${item.bg} ${item.color} flex items-center justify-center mb-6`}>
                   <item.icon className="w-6 h-6" />
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-slate-900 italic tracking-tight uppercase tracking-tight italic uppercase tracking-tight italic uppercase tracking-tight italic uppercase tracking-tight italic uppercase tracking-tight italic uppercase tracking-tight italic uppercase tracking-tight italic uppercase tracking-tight italic tracking-tight">{item.title}</h3>
+                    <h3 className="text-lg font-bold text-slate-900 italic tracking-tight uppercase">{item.title}</h3>
                     <Badge variant="outline" className={`rounded-lg italic font-bold uppercase tracking-widest text-[8px] ${
                       item.impact === 'Critical' ? 'text-rose-600 bg-rose-50 border-rose-100' :
-                      item.impact === 'High' ? 'text-indigo-600 bg-indigo-50 border-indigo-100' :
+                      item.impact === 'High' ? 'text-red-600 bg-red-50 border-red-100' :
                       'text-emerald-600 bg-emerald-50 border-emerald-100'
                     }`}>
                       {item.impact} Impact
@@ -106,7 +106,7 @@ export default function AIInsights() {
                   <p className="text-sm text-slate-500 leading-relaxed font-medium">
                     {item.description}
                   </p>
-                  <Button variant="link" className="p-0 h-auto text-indigo-600 font-bold text-xs gap-1 group-hover:gap-2 transition-all italic">
+                  <Button variant="link" className="p-0 h-auto text-red-600 font-bold text-xs gap-1 group-hover:gap-2 transition-all italic">
                     View Details
                     <ArrowUpRight className="w-3 h-3" />
                   </Button>
@@ -130,7 +130,7 @@ export default function AIInsights() {
                     "Diversify candidate sourcing to include niche developer communities."
                   ].map((s, i) => (
                     <div key={i} className="flex gap-4 items-start">
-                      <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                      <div className="w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold text-xs shrink-0">
                         {i + 1}
                       </div>
                       <p className="text-slate-300 text-sm font-medium leading-relaxed">{s}</p>
@@ -142,10 +142,10 @@ export default function AIInsights() {
                 </Button>
               </div>
               <div className="relative hidden md:block">
-                <div className="absolute inset-0 bg-indigo-500/20 blur-3xl rounded-full" />
+                <div className="absolute inset-0 bg-red-500/20 blur-3xl rounded-full" />
                 <div className="relative bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center font-bold italic">SH</div>
+                    <div className="w-10 h-10 rounded-lg bg-red-600 flex items-center justify-center font-bold italic">SH</div>
                     <div>
                       <p className="text-xs font-bold text-white uppercase tracking-widest italic">AI Assistant</p>
                       <p className="text-[10px] text-slate-400 italic">Connected</p>
@@ -158,7 +158,7 @@ export default function AIInsights() {
                     <motion.div 
                       animate={{ x: [-100, 300] }}
                       transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      className="w-1/3 h-full bg-indigo-500"
+                      className="w-1/3 h-full bg-red-500"
                     />
                   </div>
                 </div>

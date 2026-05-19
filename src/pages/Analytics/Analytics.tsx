@@ -21,10 +21,10 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
 const metrics = [
-  { label: "Hire Rate", val: "14.2%", change: "+2.4%", icon: Target, color: "text-indigo-600", bg: "bg-indigo-50" },
+  { label: "Hire Rate", val: "14.2%", change: "+2.4%", icon: Target, color: "text-red-600", bg: "bg-red-50" },
   { label: "Time to Fill", val: "18 days", change: "-4 days", icon: Clock, color: "text-emerald-600", bg: "bg-emerald-50" },
   { label: "Cost per Hire", val: "$1,240", change: "-12%", icon: TrendingUp, color: "text-rose-600", bg: "bg-rose-50" },
-  { label: "Talent Pool", val: "4,821", change: "+420", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+  { label: "Talent Pool", val: "4,821", change: "+420", icon: Users, color: "text-red-600", bg: "bg-red-50" },
 ]
 
 export default function Analytics() {
@@ -57,7 +57,7 @@ export default function Analytics() {
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-2">Hiring Performance</h1>
               <p className="text-slate-500 font-medium">Deep dive into your recruitment funnel and team efficiency.</p>
             </div>
-            <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2 shadow-md shadow-indigo-100 rounded-xl font-bold py-6 px-8 italic">
+            <Button className="bg-red-600 hover:bg-red-700 gap-2 shadow-md shadow-red-100 rounded-xl font-bold py-6 px-8 italic">
               Download Full Report
               <ArrowUpRight className="w-4 h-4" />
             </Button>
@@ -71,7 +71,7 @@ export default function Analytics() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 key={item.label}
-                className="p-8 rounded-3xl bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-50 transition-all text-left"
+                className="p-8 rounded-3xl bg-white border border-slate-200 hover:border-red-300 hover:shadow-xl hover:shadow-red-50 transition-all text-left"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className={`w-10 h-10 rounded-xl ${item.bg} ${item.color} flex items-center justify-center font-bold`}>
@@ -97,12 +97,12 @@ export default function Analytics() {
               <div className="flex items-center justify-between px-2">
                 <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 italic uppercase">
                   Candidate Flow
-                  <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full uppercase tracking-wider">Funnel View</span>
+                  <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full uppercase tracking-wider">Funnel View</span>
                 </h2>
               </div>
               <div className="h-96 rounded-3xl bg-white border border-slate-200 p-8 flex flex-col justify-end relative group overflow-hidden">
                 <div className="absolute top-0 right-0 p-8">
-                  <BarChart3 className="w-12 h-12 text-slate-100 group-hover:text-indigo-50 transition-colors" />
+                  <BarChart3 className="w-12 h-12 text-slate-100 group-hover:text-red-50 transition-colors" />
                 </div>
                 <div className="flex items-end gap-4 h-full">
                   {[40, 70, 45, 90, 65, 80, 55, 75, 60, 85].map((h, i) => (
@@ -111,7 +111,7 @@ export default function Analytics() {
                       initial={{ height: 0 }}
                       animate={{ height: `${h}%` }}
                       transition={{ delay: i * 0.05, duration: 1 }}
-                      className="flex-1 bg-slate-100 rounded-t-xl group-hover:bg-indigo-100 transition-colors relative"
+                      className="flex-1 bg-slate-100 rounded-t-xl group-hover:bg-red-100 transition-colors relative"
                     >
                       <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity italic">
                         {h}%
@@ -143,7 +143,7 @@ export default function Analytics() {
                   </h3>
                 </div>
                 <div className="relative w-48 h-48 mx-auto mb-8">
-                  <div className="absolute inset-0 border-[20px] border-indigo-600 rounded-full clip-path-polygon-[0_0,100%_0,100%_100%,0_100%]" />
+                  <div className="absolute inset-0 border-[20px] border-red-600 rounded-full clip-path-polygon-[0_0,100%_0,100%_100%,0_100%]" />
                   <div className="absolute inset-4 border-[15px] border-emerald-400 rounded-full" />
                   <div className="absolute inset-10 border-[10px] border-rose-400 rounded-full" />
                   <div className="absolute inset-0 flex items-center justify-center flex-col italic">
@@ -153,7 +153,7 @@ export default function Analytics() {
                 </div>
                 <div className="space-y-4 font-bold text-xs italic uppercase tracking-wider">
                   {[
-                    { label: "Engineering", color: "bg-indigo-600", val: "42%" },
+                    { label: "Engineering", color: "bg-red-600", val: "42%" },
                     { label: "Design", color: "bg-emerald-400", val: "28%" },
                     { label: "Product", color: "bg-rose-400", val: "30%" }
                   ].map(d => (

@@ -324,10 +324,26 @@ export function ProcessPath() {
     }, []);
 
     const steps = [
-        { title: "Source", icon: <Shapes /> },
-        { title: "Screen", icon: <Layout /> },
-        { title: "Interview", icon: <PenTool /> },
-        { title: "Hire", icon: <Zap /> }
+        { 
+            title: "Upload Resume", 
+            icon: <Shapes />,
+            description: "Start your journey by uploading your resume and let our AI analyze it for key skills and experience."
+        },
+        { 
+            title: "Calculate ATS Score", 
+            icon: <Layout />,
+            description: "Get an instant ATS score to see how well your resume matches job requirements and optimize it."
+        },
+        { 
+            title: "Mock-Interview", 
+            icon: <PenTool />,
+            description: "Practice with AI-powered mock interviews to prepare and build confidence for real interviews."
+        },
+        { 
+            title: "Coding Assessment", 
+            icon: <Zap />,
+            description: "Evaluate your coding skills with challenging assessments and get detailed feedback to improve."
+        }
     ];
 
     return (
@@ -358,7 +374,7 @@ export function ProcessPath() {
                             </div>
                             <div className="p-8 border-2 border-slate-900 rounded-2xl bg-white shadow-lg flex-1" style={{ filter: "url(#squiggle)" }}>
                                 <h3 className="text-3xl font-black text-slate-900 mb-2">{s.title}</h3>
-                                <p className="text-slate-500 font-medium">Move high-potential candidates from first match to offer with a seamless recruiting path.</p>
+                                <p className="text-slate-500 font-medium">{s.description}</p>
                             </div>
                         </motion.div>
                     ))}
@@ -543,7 +559,6 @@ export function SketchyLanding() {
                     </Link>
                     <div className="hidden items-center gap-8 md:flex text-sm text-slate-700">
                         <a href="#platform" className="transition hover:text-slate-900">Platform</a>
-                        <a href="#pricing" className="transition hover:text-slate-900">Pricing</a>
                         <a href="#customers" className="transition hover:text-slate-900">Customers</a>
                     </div>
                     <Link
@@ -558,7 +573,6 @@ export function SketchyLanding() {
                 <SketchbookShowcase />
                 <ProcessPath />
                 <ClientScribbles />
-                <PricingDrafts />
                 <BlueprintFooter />
                 <TapeMarquee />
             </div>

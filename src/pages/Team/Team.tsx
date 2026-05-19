@@ -81,7 +81,7 @@ export default function Team() {
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-2 italic uppercase">Your Team</h1>
               <p className="text-slate-500 font-medium">Manage collaborators and define access roles for your hiring workspace.</p>
             </div>
-            <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2 shadow-md shadow-indigo-100 rounded-xl h-12 px-6 font-bold italic">
+            <Button className="bg-red-600 hover:bg-red-700 gap-2 shadow-md shadow-red-100 rounded-xl h-12 px-6 font-bold italic">
               <UserPlus className="w-5 h-5" />
               Invite Member
             </Button>
@@ -93,7 +93,7 @@ export default function Team() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input 
                 placeholder="Search by name or email..." 
-                className="pl-10 border-slate-200 rounded-xl focus-visible:ring-indigo-500 h-10 font-medium italic"
+                className="pl-10 border-slate-200 rounded-xl focus-visible:ring-red-500 h-10 font-medium italic"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export default function Team() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.1 }}
                 key={member.id}
-                className="bg-white p-8 rounded-3xl border border-slate-200 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-50 transition-all group relative text-center"
+                className="bg-white p-8 rounded-3xl border border-slate-200 hover:border-red-300 hover:shadow-xl hover:shadow-red-50 transition-all group relative text-center"
               >
                 <div className="absolute top-4 right-4">
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 group-hover:text-slate-600">
@@ -119,7 +119,7 @@ export default function Team() {
                 </div>
 
                 <div className="relative w-20 h-20 mx-auto mb-6">
-                  <div className="w-full h-full rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-xl font-bold text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors uppercase tracking-tight italic">
+                  <div className="w-full h-full rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-xl font-bold text-slate-400 group-hover:bg-red-50 group-hover:text-red-600 transition-colors uppercase tracking-tight italic">
                     {member.avatar}
                   </div>
                   <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-white ${
@@ -134,7 +134,7 @@ export default function Team() {
 
                 <div className="flex flex-col gap-2">
                   <Badge variant="outline" className="w-full justify-center py-1.5 rounded-xl border-slate-100 text-slate-600 bg-slate-50/50 uppercase tracking-widest text-[9px] font-bold">
-                    <Shield className="w-3 h-3 mr-2 text-indigo-500" />
+                    <Shield className="w-3 h-3 mr-2 text-red-600" />
                     {member.role}
                   </Badge>
                   <div className="flex items-center justify-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">
@@ -146,12 +146,12 @@ export default function Team() {
             ))}
 
             {/* Invite Placeholder */}
-            <button className="p-8 rounded-3xl border-2 border-dashed border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/10 transition-all flex flex-col items-center justify-center gap-4 group">
-              <div className="w-12 h-12 rounded-full border-2 border-slate-100 flex items-center justify-center text-slate-300 group-hover:border-indigo-200 group-hover:text-indigo-400 transition-colors italic">
+            <button className="p-8 rounded-3xl border-2 border-dashed border-slate-200 hover:border-red-300 hover:bg-red-50/10 transition-all flex flex-col items-center justify-center gap-4 group">
+              <div className="w-12 h-12 rounded-full border-2 border-slate-100 flex items-center justify-center text-slate-300 group-hover:border-red-200 group-hover:text-red-400 transition-colors italic">
                 <Plus className="w-6 h-6" />
               </div>
               <div className="text-center italic">
-                <p className="font-bold text-slate-400 group-hover:text-indigo-600 transition-colors uppercase tracking-widest text-xs">Add Collaborator</p>
+                <p className="font-bold text-slate-400 group-hover:text-red-600 transition-colors uppercase tracking-widest text-xs">Add Collaborator</p>
                 <p className="text-[10px] text-slate-300 font-bold italic">Expand your workspace</p>
               </div>
             </button>
